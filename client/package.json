@@ -1,16 +1,12 @@
 {
-  "name": "REPLACE_ME",
-  "description": "REPLACE_ME",
-  "author": "REPLACE_ME",
+  "name": "delphi-lsp-client",
+  "description": "delphiLSP client",
+  "author": "Thomas Michiels",
   "license": "MIT",
   "version": "0.0.1",
-  "publisher": "REPLACE_ME",
-  "repository": {
-    "type": "git",
-    "url": "REPLACE_ME"
-  },
+  "publisher": "Thomas Michiels",
   "engines": {
-    "vscode": "^1.75.0"
+    "vscode": "^1.99.3"
   },
   "dependencies": {
     "vscode-languageclient": "^8.1.0"

@@ -1,16 +1,16 @@
 {
-  "name": "REPLACE_ME",
-  "description": "REPLACE_ME",
-  "author": "REPLACE_ME",
+  "name": "delphi-lsp",
+  "description": "custom V&V lsp for delphi",
+  "author": "Thomas Michiels",
   "license": "MIT",
   "version": "1.0.0",
-  "publisher": "REPLACE_ME",
+  "publisher": "Thomas Michiels",
   "categories": [],
   "engines": {
-    "vscode": "^1.75.0"
+    "vscode": "^1.99.3"
   },
   "activationEvents": [
-    "onLanguage"
+    "onLanguage:delphi"
   ],
   "main": "./client/out/extension",
   "contributes": {
@@ -25,5 +25,8 @@
   "devDependencies": {
     "@types/node": "^20.5.7",
     "typescript": "^5.2.2"
+  },
+  "dependencies": {
+    "tsc": "^2.0.4"
   }
 }
