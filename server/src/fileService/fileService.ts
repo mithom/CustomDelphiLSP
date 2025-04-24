@@ -11,20 +11,20 @@ import { willSaveWaitUntil } from "./willSaveWaitUntil"
 // Create a simple text document manager.
 export const documents: TextDocuments<TextDocument> = new TextDocuments(TextDocument);
 
-export function init(connection: Connection): void {
-	documents.onDidChangeContent((change) => {
-		connection.window.showInformationMessage(
-			"onDidChangeContent: " + change.document.uri
-		);
-	});
-	documents.onDidChangeContent(didChange);
-	documents.onDidClose(didClose)
-	documents.onDidOpen(didOpen)
-	documents.onDidSave(didSave)
-	documents.onWillSave(willSave)
-	documents.onWillSaveWaitUntil(willSaveWaitUntil)
+export class fileService {
+	constructor(){
 
-	// Make the text document manager listen on the connection
-	// for open, change and close text document events
-	documents.listen(connection);
+	}
+	init(connection: Connection): void {
+		documents.onDidChangeContent(didChange);
+		documents.onDidClose(didClose);
+		documents.onDidOpen(didOpen);
+		documents.onDidSave(didSave);
+		documents.onWillSave(willSave);
+		documents.onWillSaveWaitUntil(willSaveWaitUntil);
+
+		// Make the text document manager listen on the connection
+		// for open, change and close text document events
+		documents.listen(connection);
+	}
 }

@@ -1,5 +1,5 @@
 {
-  "name": "delphi-lsp",
+  "name": "custom-delphi-lsp",
   "description": "custom V&V lsp for delphi",
   "author": "Thomas Michiels",
   "license": "MIT",
@@ -10,7 +10,7 @@
     "vscode": "^1.99.3"
   },
   "activationEvents": [
-    "onLanguage:delphi"
+    "onLanguage:objectpascal"
   ],
   "main": "./client/out/extension",
   "contributes": {
@@ -24,7 +24,7 @@
   },
   "devDependencies": {
     "@types/node": "^20.5.7",
-    "typescript": "^5.2.2"
+    "typescript": "^5.8.3"
   },
   "dependencies": {
     "tsc": "^2.0.4"

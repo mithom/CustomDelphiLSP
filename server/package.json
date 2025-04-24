@@ -8,6 +8,7 @@
     "node": "*"
   },
   "dependencies": {
+    "tokenizr": "^1.7.0",
     "vscode-languageserver": "^8.1.0",
     "vscode-languageserver-textdocument": "^1.0.8"
   }

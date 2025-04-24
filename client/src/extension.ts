@@ -16,6 +16,8 @@ export function activate(context: ExtensionContext) {
     path.join("server", "out", "server.js")
   );
 
+  const debugOptions = { execArgv: ['--nolazy', '--inspect=6009'] };
+
   // If the extension is launched in debug mode then the debug server options are used
   // Otherwise the run options are used
   const serverOptions: ServerOptions = {
@@ -23,13 +25,14 @@ export function activate(context: ExtensionContext) {
     debug: {
       module: serverModule,
       transport: TransportKind.ipc,
+      options: debugOptions
     },
   };
 
   // Options to control the language client
   const clientOptions: LanguageClientOptions = {
     // Register the server for all documents by default
-    documentSelector: [{ scheme: "file", language: "delphi" }],
+    documentSelector: [{ scheme: "file", language: "objectpascal" }],
     synchronize: {
       // Notify the server about file changes to '.clientrc files contained in the workspace
       fileEvents: workspace.createFileSystemWatcher("**/.clientrc"),
@@ -38,8 +41,8 @@ export function activate(context: ExtensionContext) {
 
   // Create the language client and start the client.
   client = new LanguageClient(
-    "VVdelphiLSP",
-    "V&V Delphi LSP",
+    "CustomDelphiLSP",
+    "Custom Delphi LSP",
     serverOptions,
     clientOptions
   );
