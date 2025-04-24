@@ -10,7 +10,7 @@ export class iprocedure extends namedInstance {
 	static readonly tokenId = "procedure"
 	static readonly tokenArgument = "argument"
 	static readonly procedureRegex: RegExp = /procedure\s+([a-zA-Z]\w*)/i;
-	static readonly argumentsRegex: RegExp = /\(([a-zA-Z]\w*):\s*([a-zA-Z]\w*)/i;
+	static readonly argumentsRegex: RegExp = /([a-zA-Z]\w*):\s*([a-zA-Z]\w*)/i;
 
 	constructor(name: string, args?: _arguments, access?: accessModifier) {
 		super(name, access);
