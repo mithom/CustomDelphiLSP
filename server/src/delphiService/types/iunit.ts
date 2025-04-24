@@ -35,12 +35,10 @@ export class iunit {
 
 	static addOrReplaceNewUnit(name: string): iunit {
 		let result: iunit | undefined;
-		log.write(this)
 		result = this._units.get(name);
 		if (result === undefined) {
 			result = new iunit(name);
 			this._units.set(result.name, result)
-			log.write(this)
 		} else {
 			result.setEmpty();
 		}

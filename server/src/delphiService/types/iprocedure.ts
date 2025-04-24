@@ -2,7 +2,6 @@
 import { namedInstance, _arguments, accessModifier } from "./base";
 import { ActionContext } from "tokenizr";
 import { iunit } from "./iunit";
-import log from "../../log";
 
 export class iprocedure extends namedInstance {
 	args: _arguments;
@@ -22,7 +21,6 @@ export class iprocedure extends namedInstance {
 	}
 
 	static parseProcedure(ctx: ActionContext, match: RegExpExecArray): ActionContext {
-		log.write("parsing procedure")
 		assert (match.length == 2, "there should a match and 1 group");
 		let procedure = new iprocedure (match[1]);
 		if (ctx.state() === iunit.tokenId){
