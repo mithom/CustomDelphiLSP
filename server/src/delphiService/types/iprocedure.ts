@@ -2,6 +2,7 @@
 import { namedInstance, _arguments, accessModifier } from "./base";
 import { ActionContext } from "tokenizr";
 import { iunit } from "./iunit";
+import log from "../../log";
 
 export class iprocedure extends namedInstance {
 	args: _arguments;
@@ -30,16 +31,16 @@ export class iprocedure extends namedInstance {
 			assert(false) // currently only procedures inside of units, not objects/records/other procedures supported
 		}
 
-		ctx.push(iprocedure.tokenId);
-		ctx.data(iprocedure.tokenId, procedure);
+		ctx.push(this.tokenId);
+		ctx.data(this.tokenId, procedure);
 		ctx.tag ("header")
-		return ctx.accept(iprocedure.tokenId);
+		return ctx.accept(this.tokenId);
 	}
 
 	static parseArguments(ctx: ActionContext, match: RegExpExecArray): ActionContext {
 		assert(match.length == 3, "there should a match and 2 group");
-		const proc = ctx.data(iprocedure.tokenId) as iprocedure;
+		const proc = ctx.data(this.tokenId) as iprocedure;
 		proc.args.set(match[1], match[2]) //TODOTH add validation to the type
-		return ctx.accept(iprocedure.tokenArgument)
+		return ctx.accept(this.tokenArgument)
 	}
 }

@@ -5,6 +5,8 @@ import { ActionContext, RuleAction } from "tokenizr";
 import { strict as assert } from "assert"
 import { ifield } from "./ifield";
 import log from "../../log";
+import { documents } from "../../fileService/fileService";
+import {parseUnit as parseDocument} from "../delphiService";
 
 export class iunit {
 	name: string;
@@ -26,11 +28,10 @@ export class iunit {
 	static parseUnit(ctx: ActionContext, match: RegExpExecArray): ActionContext {
 		assert (match.length == 2, "there should a match and 1 group");
 		assert (ctx.state() === "default");
-		let unit = iunit.addOrReplaceNewUnit(match[1]);
-		ctx.push(iunit.tokenId);
-		ctx.data(iunit.tokenId, unit);
-		log.write("parse unit done")
-		return ctx.accept(iunit.tokenId);
+		let unit = this.addOrReplaceNewUnit(match[1]);
+		ctx.push(this.tokenId);
+		ctx.data(this.tokenId, unit);
+		return ctx.accept(this.tokenId);
 	}
 
 	static addOrReplaceNewUnit(name: string): iunit {
@@ -41,6 +42,22 @@ export class iunit {
 			this._units.set(result.name, result)
 		} else {
 			result.setEmpty();
+		}
+		return result;
+	}
+
+	static getOrReadUnit(name: string): iunit {
+		let result: iunit | undefined;
+		result = this._units.get(name);
+		if (result === undefined) {
+			result = new iunit(name);
+			this._units.set(result.name, result)
+			//TODO: parse this unit
+
+			let file = documents.all().find((document) => document.uri.endsWith(`${name}.pas`))
+			log.write(documents.all().map((doc)=>doc.uri))
+			assert (file !== undefined)
+			parseDocument(file)
 		}
 		return result;
 	}

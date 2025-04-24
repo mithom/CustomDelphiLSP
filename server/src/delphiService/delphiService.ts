@@ -1,48 +1,20 @@
 ﻿import { Range, TextDocument } from "vscode-languageserver-textdocument";
-import Tokenizr from "tokenizr"
+import Tokenizr, { Token } from "tokenizr"
 import { iunit } from "./types/iunit";
 import {strict as assert} from "assert"
 import { iprocedure } from "./delphiTypes";
 import log from "../log";
 
-
-function getlineRange(document: TextDocument, line: number): Range {
-	return {
-		start: {
-			line,
-			character: 0
-		},
-		end: document.positionAt(document.offsetAt({
-				line: line + 1,
-				character: 0
-			}) - 1)
-	}
-}
-
-// function parseUnit (unitLine: string): iunit {
-// 	return iunit.addOrReplaceNewUnit(unitLine.match(iunit.unitRegex)![0]) //possible runtime error if unitline is wrong - for now okay
-// }
-
-// export function parseInterface(document: TextDocument){
-// 	let startUnit: number = -1;
-// 	let startInterface: number = -1;
-// 	let startImplementation: number =-1;
-
-// 	for (let lineNr = 0; lineNr < document.lineCount; lineNr++) {
-// 		const line = document.getText(getlineRange(document, lineNr))
-// 		if (line.startsWith("unit")){
-// 			parseUnit (line)
-// 		}
-// 		else if (startUnit === -1)
-// 			continue;
-// 		if (line.startsWith("interface"))
-// 			startInterface = lineNr;
-// 		else if (startInterface === -1)
-// 			continue;
-// 		if (line.startsWith("implementation")){
-// 			startImplementation = lineNr;
-// 			break;
-// 		}
+// function getlineRange(document: TextDocument, line: number): Range {
+// 	return {
+// 		start: {
+// 			line,
+// 			character: 0
+// 		},
+// 		end: document.positionAt(document.offsetAt({
+// 				line: line + 1,
+// 				character: 0
+// 			}) - 1)
 // 	}
 // }
 
@@ -56,32 +28,45 @@ function init(){
 	//TODO: split up in logic per syntactical state, this will become huge otherwise
 	//TODO: less syntax logic here, only lexical logic!
 
-	lexer.rule('skip-implementation', /end\./, (ctx, match) => {
+	lexer.rule('skip-implementation', /end\./i, (ctx, match) => {
 		assert(ctx.state() === "skip-implementation");
 		ctx.pop();
 		ctx.reject();
 	});
 	lexer.rule('skip-implementation', /./, (ctx, match) => {
 		ctx.ignore();
-	})
+	});
 	lexer.rule(/\/\/[^\r\n]*\r?\n/, (ctx, match) => { ctx.ignore() }); //single line comment
-	lexer.rule(/\{.*\}/m, (ctx, match) => { ctx.ignore() }); // multiline comments
+	lexer.rule(/{[^}]*}/, (ctx, match) => { ctx.ignore() }); // multiline comments
 
-	lexer.rule(iunit.tokenId, /end\./, (ctx, match) => {
+	lexer.rule(iunit.tokenId, /end\./i, (ctx, match) => {
 		assert(ctx.pop() === iunit.tokenId)
 		ctx.accept("unitEnd")
 	});
 	lexer.rule(iunit.tokenId, iunit.interfaceRegex, (ctx, match) => { 
 		ctx.tag(iunit.tokenInterface);
 		ctx.accept (iunit.tokenInterface);
-	})
+	});
 	lexer.rule(iunit.tokenId + ` #${iunit.tokenInterface}`, /implementation/, (ctx, match) => {
 		ctx.push("skip-implementation");
 		ctx.ignore();
 	});
-
-	lexer.rule(iunit.unitRegex, iunit.parseUnit); //possibly need to call .bind(X) on parseUnit
-	lexer.rule(iunit.tokenId, iprocedure.procedureRegex, iprocedure.parseProcedure);
+	lexer.rule(iunit.tokenId + ` #${iunit.tokenInterface}`, /uses/i, (ctx, match) => {
+		ctx.push("uses")
+		ctx.accept ("uses")
+	});
+	lexer.rule("uses", /,/, (ctx, match) => {
+		ctx.accept ("usesSeperator")
+	});
+	lexer.rule("uses", /;/, (ctx, match) => {
+		ctx.pop();
+		ctx.accept ("usesEnd")
+	});
+	lexer.rule("uses", /[a-zA-Z]\w*/, (ctx, match) => {
+		ctx.accept("usesUnit", match[0])
+	});
+	lexer.rule(iunit.unitRegex, iunit.parseUnit.bind(iunit));
+	lexer.rule(iunit.tokenId, iprocedure.procedureRegex, iprocedure.parseProcedure.bind(iprocedure));
 	lexer.rule(iprocedure.tokenId + " #header", /\(/, (ctx, m)=>{
 		ctx.tag("args");
 		ctx.ignore();
@@ -93,7 +78,7 @@ function init(){
 	lexer.rule(iprocedure.tokenId + " #header #args", /;/, (ctx, m) => {
 		ctx.accept("argSeperator");
 	});
-	lexer.rule(iprocedure.tokenId + " #header #args", iprocedure.argumentsRegex, iprocedure.parseArguments);
+	lexer.rule(iprocedure.tokenId + " #header #args", iprocedure.argumentsRegex, iprocedure.parseArguments.bind(iprocedure));
 	lexer.rule(iprocedure.tokenId + " #header", /;/, (ctx, m)=>{
 		ctx.untag("header");
 		ctx.pop()
@@ -102,16 +87,32 @@ function init(){
 	lexer.rule(/[\s\r\n]+/, (ctx, m) => {
 		ctx.ignore()
 	})
-
 }
 
-export function parseUnitEx2(document: TextDocument){
+export function parseUnit(document: TextDocument){
 	init()
 
 	lexer.input(document.getText())
 	
 	lexer.consume(iunit.tokenId)
 	lexer.consume(iunit.tokenInterface)
+
+	if(lexer.peek().isA("uses")){
+		lexer.consume("uses");
+		consumeUnit();
+		for (;;) {
+			let item = lexer.alternatives(
+				() => {
+					lexer.consume("usesSeperator")
+					return consumeUnit();
+				},
+				() => lexer.consume("usesEnd")
+			)
+			if (item.isA("usesEnd"))
+				break;
+		}
+	}
+
 	for(;;){
 		let item = lexer.alternatives(
 			parseProcedure,
@@ -120,24 +121,28 @@ export function parseUnitEx2(document: TextDocument){
 		if (item === undefined)
 			break;
 	}
-	lexer.consume("unitEnd")
-	lexer.consume("EOF")
+	lexer.consume("unitEnd");
+	lexer.consume("EOF");
 
-	log.write(iunit._units)
+	log.write(iunit._units);
 }
 
-function parseProcedure(){
+function consumeUnit(): Token {
+	let result = lexer.consume("usesUnit");
+	iunit.getOrReadUnit (result.value)
+	return result;
+}
+
+function parseProcedure(): Token{
 	lexer.consume(iprocedure.tokenId)
-	let item = lexer.alternatives(
+	let item: Token = lexer.alternatives(
 		parseArguments,
-		() => {
-			return lexer.consume("procedureEnd") 
-		}
+		() => lexer.consume("procedureEnd")
 	)
 	return item;
 }
 
-function parseArguments(){
+function parseArguments(): Token{
 	lexer.consume(iprocedure.tokenArgument)
 	while (lexer.peek().isA("argSeperator")){
 		lexer.consume("argSeperator")
@@ -146,6 +151,6 @@ function parseArguments(){
 	return lexer.consume("procedureEnd");
 }
 
-function parseEmpty() {
+function parseEmpty(): undefined {
 	return undefined
 }
