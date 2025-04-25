@@ -1,6 +1,7 @@
-﻿import { InitializeResult, InitializeParams, TextDocumentSyncKind } from "vscode-languageserver";
+﻿import { InitializeResult, InitializeParams, TextDocumentSyncKind, CancellationToken, CancellationTokenSource } from "vscode-languageserver";
 import log from "../log"
-import {connection} from "../server"
+import {connection, server} from "../server"
+import { LspServer } from "../core/lspServer";
 
 
 export let hasConfigurationCapability: boolean = false;
@@ -13,7 +14,7 @@ export const initialize = (params: InitializeParams): InitializeResult => {
 	connection.window.showInformationMessage(
 		"onInitialize LSP"
 	)
-
+	server.initialize(params, new CancellationTokenSource().token);
 	let capabilities = params.capabilities;
 
 	// Does the client support the `workspace/configuration` request?
