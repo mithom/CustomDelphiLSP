@@ -3,9 +3,9 @@ import { connection, service } from "../server"
 import { fileService } from "../fileService"
 
 export function completion(params: CompletionParams, token: CancellationToken, workDoneProgress: WorkDoneProgressReporter, resultProgress?: ResultProgressReporter<CompletionItem[]>): HandlerResult<CompletionList | null, void> {
-	connection.window.showInformationMessage(
-		"onCompletion LSP"
-	)
+	// connection.window.showInformationMessage(
+	// 	"onCompletion LSP"
+	// )
 	
 	var doc = fileService.documents.get(params.textDocument.uri);
 	if (doc === undefined)

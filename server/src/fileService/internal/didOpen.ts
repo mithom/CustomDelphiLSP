@@ -6,7 +6,7 @@ import { connection, service } from "../../server";
 
 export async function didOpen (event: TextDocumentChangeEvent<TextDocument>): Promise<void> {
 	log.write("OPEN")
-	parseUnit (event.document)
+	//parseUnit (event.document)
 	let diagnostics = await service.doValidation(event.document);
 	let response: PublishDiagnosticsParams = {
 		uri: event.document.uri,

@@ -4,6 +4,7 @@ import { CommonTokenStream, Token, CharStream, ATNSimulator, Recognizer, BaseErr
 import { getPosition, getTokenIndexFromParseTree, getCandidates } from './utils/completion'
 import type { TextEdit } from 'vscode-languageserver-textdocument'
 import { CompletionItem, CompletionList, Diagnostic, DiagnosticSeverity, Hover } from 'vscode-languageserver'
+import log from '../log'
 
 export function normalizeQuery(data: string): string {
 	return data != null ? data : ''
@@ -97,7 +98,7 @@ export class ANTLR4LanguageService implements LanguageService {
 			if (symbolicName) {
 				symbolicName = symbolicName.replace(/["']/g, '')
 				items.push({
-					label: symbolicName.toUpperCase(),
+					label: symbolicName,
 				})
 			}
 		})

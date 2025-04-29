@@ -9,7 +9,7 @@ export async function didChange(event: TextDocumentChangeEvent<TextDocument>): P
 	// 	"onDidChangeContent: " + event.document.uri
 	// );
 	log.write("CHANGE");
-	parseUnit (event.document)
+	//parseUnit (event.document)
 	let diagnostics = await service.doValidation(event.document);
 	let response: PublishDiagnosticsParams = {
 		uri: event.document.uri,
