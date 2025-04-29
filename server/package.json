@@ -5,7 +5,10 @@
   "author": "Thomas Michiels",
   "license": "MIT",
   "engines": {
-    "node": "*"
+    "vscode": "^1.99.3"
+  },
+  "devDependencies": {
+    "@types/vscode": "1.99.0"
   },
   "dependencies": {
     "tokenizr": "^1.7.0",

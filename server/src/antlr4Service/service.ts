@@ -1,12 +1,4 @@
-﻿// import {
-// 	Diagnostic,
-// 	Hover,
-// 	DiagnosticSeverity,
-// 	TextDocument,
-// 	CompletionList,
-// 	CompletionItem,
-// } from '@aws/language-server-runtimes/server-interface'
-import { TextDocument } from 'vscode-languageserver-textdocument'
+﻿import { TextDocument } from 'vscode-languageserver-textdocument'
 import { type LanguageService } from '../core/languageService'
 import { CommonTokenStream, Token, CharStream, ATNSimulator, Recognizer, BaseErrorListener, type Lexer, type Parser } from 'antlr4ng'
 import { getPosition, getTokenIndexFromParseTree, getCandidates } from './utils/completion'

@@ -89,12 +89,12 @@ function init(){
 	})
 }
 
-export function parseUnit(document: TextDocument){
+export function parseUnit(document: TextDocument): iunit {
 	init()
-
+	log.write(`parsing ${document.uri}`)
 	lexer.input(document.getText())
 	
-	lexer.consume(iunit.tokenId)
+	const unitToken = lexer.consume(iunit.tokenId)
 	lexer.consume(iunit.tokenInterface)
 
 	if(lexer.peek().isA("uses")){
@@ -102,11 +102,8 @@ export function parseUnit(document: TextDocument){
 		consumeUnit();
 		for (;;) {
 			let item = lexer.alternatives(
-				() => {
-					lexer.consume("usesSeperator")
-					return consumeUnit();
-				},
-				() => lexer.consume("usesEnd")
+				consumeUsesEnd,
+				consumeUsesUnitWithSeperator,
 			)
 			if (item.isA("usesEnd"))
 				break;
@@ -125,11 +122,21 @@ export function parseUnit(document: TextDocument){
 	lexer.consume("EOF");
 
 	log.write(iunit._units);
+	return unitToken.value as iunit;
+}
+
+function consumeUsesUnitWithSeperator(): Token{
+	lexer.consume("usesSeperator");
+	return consumeUnit();
+}
+
+function consumeUsesEnd(): Token{
+	return lexer.consume("usesEnd")
 }
 
 function consumeUnit(): Token {
 	let result = lexer.consume("usesUnit");
-	iunit.getOrReadUnit (result.value)
+	iunit.getOrReadUnit (result.value).then(()=>{},(reason)=>{log.write(reason)})
 	return result;
 }
 

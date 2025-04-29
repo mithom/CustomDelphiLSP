@@ -5,8 +5,9 @@ import { ActionContext, RuleAction } from "tokenizr";
 import { strict as assert } from "assert"
 import { ifield } from "./ifield";
 import log from "../../log";
-import { documents } from "../../fileService/fileService";
-import {parseUnit as parseDocument} from "../delphiService";
+import { fileService } from "../../fileService";
+import { parseUnit as parseDocument} from "../delphiService";
+import { connection } from "../../server";
 
 export class iunit {
 	name: string;
@@ -31,7 +32,7 @@ export class iunit {
 		let unit = this.addOrReplaceNewUnit(match[1]);
 		ctx.push(this.tokenId);
 		ctx.data(this.tokenId, unit);
-		return ctx.accept(this.tokenId);
+		return ctx.accept(this.tokenId, unit);
 	}
 
 	static addOrReplaceNewUnit(name: string): iunit {
@@ -46,18 +47,23 @@ export class iunit {
 		return result;
 	}
 
-	static getOrReadUnit(name: string): iunit {
-		let result: iunit | undefined;
-		result = this._units.get(name);
+	static async getOrReadUnit(name: string): Promise<iunit | null> {
+		let result = this._units.get(name);
 		if (result === undefined) {
-			result = new iunit(name);
-			this._units.set(result.name, result)
-			//TODO: parse this unit
 
-			let file = documents.all().find((document) => document.uri.endsWith(`${name}.pas`))
-			log.write(documents.all().map((doc)=>doc.uri))
+			let file = fileService.documents.all().find((document) => document.uri.endsWith(`${name}.pas`))
+
+			if (file === undefined){
+				file = await fileService.findUserFile(name)
+				if (file === undefined) {
+					file = await fileService.findSystemFile(name)
+					if (file === undefined) {
+						file = await fileService.findWorkspaceFile(name)
+					}
+				}
+			}
 			assert (file !== undefined)
-			parseDocument(file)
+			result = parseDocument(file)
 		}
 		return result;
 	}

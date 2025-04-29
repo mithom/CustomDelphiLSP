@@ -13,9 +13,6 @@
     "onLanguage:objectpascal"
   ],
   "main": "./client/out/extension",
-  "contributes": {
-    "configuration": {}
-  },
   "scripts": {
     "vscode:prepublish": "npm run compile",
     "compile": "tsc -b",
@@ -24,11 +21,41 @@
   },
   "devDependencies": {
     "@types/node": "^20.5.7",
+    "@types/vscode": "1.99.0",
     "typescript": "^5.8.3"
   },
   "dependencies": {
     "antlr4-c3": "^3.4.4",
     "antlr4ng": "^3.0.16",
     "tsc": "^2.0.4"
+  },
+  "contributes": {
+    "configuration": {
+      "title": "custom DelphiLSP",
+      "type": "object",
+      "properties": {
+        "customDelphiLSP.projectJsonPath": {
+          "type": "string",
+          "description": "path of your projects {projectName}.delphilsp.json file",
+          "default": "file:///o%3A/UL3.delphilsp.json",
+          "scope": "machine"
+        }
+      }
+    },
+    "languages": [
+      {
+        "id": "objectpascal",
+        "extensions": [
+          ".pas",
+          ".dpr"
+        ],
+        "aliases": [
+          "delphi",
+          "del",
+          "objectpascal",
+          "opascal"
+        ]
+      }
+    ]
   }
 }

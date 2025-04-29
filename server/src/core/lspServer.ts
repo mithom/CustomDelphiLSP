@@ -22,8 +22,6 @@ import {
     HandlerResult
 } from 'vscode-languageserver'
 import { Notification, NotificationFollowupParams } from './notification'
-
-import { Connection } from 'vscode-languageserver/node'
 import { InitializeResult, InitializeParams, ConfigurationParams } from "vscode-languageserver-protocol"
 import log from '../log'
 

@@ -1,4 +1,4 @@
-﻿grammar Delphi;
+﻿grammar delphi;
 
 /*
  * Sonar Delphi Plugin
@@ -22,6 +22,9 @@
  * Updated from above original ANTLR3 to ANTLR4 by Jens Gotthardsen
  * https://github.com/gotthardsen/Delphi-ANTRL4-Grammar
  */
+options {
+	caseInsensitive = true;
+}
 
 @lexer::namespace{DelphiGrammar}
 @parser::namespace{DelphiGrammar}
@@ -34,31 +37,31 @@ file                         : program | library | unit | packageE
 //section fileDefinition
 //****************************
 
-program                      : (programHead)? (usesFileClause)? block '.'
+program                      : (programHead)? (usesFileClause)? block DOT
                              ;
-programHead                  : 'program' namespaceName (programParmSeq)? ';'
+programHead                  : 'program' namespaceName (programParmSeq)? SEMI
                              ;
-programParmSeq               : '(' (ident (',' ident)* )? ')'
+programParmSeq               : '(' (ident (COMMA ident)* )? ')'
                              ;
-library                      : libraryHead (usesFileClause)? block '.'
+library                      : libraryHead (usesFileClause)? block DOT
                              ;
-libraryHead                  : 'library' namespaceName (hintingDirective)* ';' 
+libraryHead                  : 'library' namespaceName (hintingDirective)* SEMI
                              ;
-packageE                     : packageHead requiresClause (containsClause)? 'end' '.'
+packageE                     : packageHead requiresClause (containsClause)? END DOT
                              ;
-packageHead                  : 'package' namespaceName ';'
+packageHead                  : 'package' namespaceName SEMI
                              ;
-unit                         : unitHead unitInterface unitImplementation unitBlock '.'
+unit                         : unitHead unitInterface unitImplementation unitBlock DOT
                              ;
-unitHead                     : 'unit' namespaceName (hintingDirective)* ';' 
+unitHead                     : 'unit' namespaceName (hintingDirective)* SEMI
                              ;
-unitInterface                : 'interface' (usesClause)? (interfaceDecl)* 
+unitInterface                : 'interface' (usesClause)? (interfaceDecl)*
                              ;
-unitImplementation           : 'implementation' (usesClause)? (declSection)* 
+unitImplementation           : 'implementation' (usesClause)? (declSection)*
                              ;
-unitBlock                    : unitInitialization 'end'
+unitBlock                    : unitInitialization END
                              | compoundStatement
-                             | 'end'
+                             | END
                              ;
 unitInitialization           : 'initialization' statementList (unitFinalization)?
                              ;
@@ -73,13 +76,13 @@ requiresClause               : 'requires' namespaceNameList
                              ;
 usesClause                   : 'uses' namespaceNameList 
                              ;
-usesFileClause               : 'uses' namespaceFileNameList 
+usesFileClause               : 'uses' namespaceFileNameList
                              ;
-namespaceFileNameList        : namespaceFileName (',' namespaceFileName)* ';' 
+namespaceFileNameList        : namespaceFileName (COMMA namespaceFileName)* SEMI
                              ;
-namespaceFileName            : namespaceName ('in' QuotedString)? 
+namespaceFileName            : namespaceName ('in' QuotedString)?
                              ;
-namespaceNameList            : namespaceName (',' namespaceName)* ';' 
+namespaceNameList            : namespaceName (COMMA namespaceName)* SEMI
                              ;
 //****************************
 //section declaration
@@ -106,32 +109,32 @@ interfaceDecl                : procDecl
                              | exportsSection
                              | constSection
                              ;
-labelDeclSection             : 'label' label (',' label)* ';'
+labelDeclSection             : 'label' label (COMMA label)* SEMI
                              ;
 constSection                 : constKey (constDeclaration)*  //CHANGED, erased one constDeclaration, for: "const {$include versioninfo.inc }"
                              ;
 constKey                     : 'const'
                              | 'resourcestring'
                              ;
-constDeclaration             : (customAttribute)? ident (':' typeDecl)? '=' constExpression (hintingDirective)* ';' 
+constDeclaration             : (customAttribute)? ident (':' typeDecl)? '=' constExpression (hintingDirective)* SEMI
                              ;
-typeSection                  : 'type' typeDeclaration (typeDeclaration)* 
+typeSection                  : 'type' typeDeclaration (typeDeclaration)*
                              ;
-typeDeclaration              : (customAttribute)? genericTypeIdent '=' typeDecl (hintingDirective)* ';' 
+typeDeclaration              : (customAttribute)? genericTypeIdent '=' typeDecl (hintingDirective)* SEMI
                              ;
-varSection                   : varKey varDeclaration (varDeclaration)* 
+varSection                   : varKey varDeclaration (varDeclaration)*
                              ;
 varKey                       : 'var'
                              | 'threadvar'
                              ;
 // threadvar geen initializations alleen globaal
-varDeclaration               : (customAttribute)? identListFlat ':' typeDecl (varValueSpec)? (hintingDirective)* ';' 
+varDeclaration               : (customAttribute)? identListFlat ':' typeDecl (varValueSpec)? (hintingDirective)* SEMI
                              ;
 varValueSpec                 : 'absolute' ident
                              | 'absolute' constExpression
                              | '=' constExpression
                              ;
-exportsSection               : 'exports' ident exportItem (',' ident exportItem)* ';'
+exportsSection               : 'exports' ident exportItem (COMMA ident exportItem)* SEMI
                              ;
 exportItem                   : ('(' (formalParameterList)? ')')? (INDEX expression)? (NAME expression)? ('resident')?
                              ;
@@ -154,7 +157,7 @@ strucTypePart                : arrayType
                              | classDecl
                              ;
 
-arrayType                    :  'array' ('[' (arrayIndex)? (',' (arrayIndex)?)* ']')? 'of' arraySubType 
+arrayType                    :  'array' ('[' (arrayIndex)? (COMMA (arrayIndex)?)* ']')? 'of' arraySubType
                                      //CHANGED we only need type info
                              ;
 
@@ -184,7 +187,7 @@ procedureType                : methodType
                              ;
 methodType                   : procedureTypeHeading 'of' 'object'
                              ;
-simpleProcedureType          : procedureTypeHeading ( (';')? callConventionNoSemi)?
+simpleProcedureType          : procedureTypeHeading ( (SEMI)? callConventionNoSemi)?
                              ;
 procedureReference           : 'reference' 'to' procedureTypeHeading
                              ;
@@ -199,7 +202,7 @@ simpleType                   : ident
                              ;
 subRangeType                 : constExpression ('..' constExpression)?
                              ;
-enumType                     : '(' ident ('=' expression)? (',' ident ('=' expression)? )* ')'
+enumType                     : '(' ident ('=' expression)? (COMMA ident ('=' expression)? )* ')'
                              ;
 typeId                       : namespacedQualifiedIdent
                              ;
@@ -211,16 +214,16 @@ genericTypeIdent             : qualifiedIdent (genericDefinition)?     //CHANGED
 genericDefinition            : simpleGenericDefinition
                              | constrainedGenericDefinition
                              ;
-simpleGenericDefinition      : '<' ident (',' ident)* '>'
+simpleGenericDefinition      : '<' ident (COMMA ident)* '>'
                              ;
-constrainedGenericDefinition : '<' constrainedGeneric (';' constrainedGeneric)* '>'
+constrainedGenericDefinition : '<' constrainedGeneric (SEMI constrainedGeneric)* '>'
                              ;
-constrainedGeneric           : ident (':' genericConstraint (',' genericConstraint)*)?
+constrainedGeneric           : ident (':' genericConstraint (COMMA genericConstraint)*)?
                              ;
 genericConstraint            : ident
                              | ( 'record' | 'class' | 'constructor' )
                              ;
-genericPostfix               : '<' typeDecl (',' typeDecl)* '>'
+genericPostfix               : '<' typeDecl (COMMA typeDecl)* '>'
                              ;
 //****************************
 //section class
@@ -235,13 +238,13 @@ classDecl                    : classTypeTypeDecl
                              ;
 classTypeTypeDecl            : 'class' 'of' typeId 
                              ;
-classTypeDecl                : 'class' (classState)? (classParent)? (classItem)* 'end' 
+classTypeDecl                : 'class' (classState)? (classParent)? (classItem)* END 
                              | 'class' (classParent)? 
                              ;
 classState                   : 'sealed'
                              | 'abstract'
                              ;
-classParent                  : '(' genericTypeIdent (',' genericTypeIdent)* ')'    //CHANGEd from typeId to classParentId
+classParent                  : '(' genericTypeIdent (COMMA genericTypeIdent)* ')'    //CHANGEd from typeId to classParentId
                              ;
 classItem                    : visibility
                              | classMethod
@@ -251,14 +254,14 @@ classItem                    : visibility
                              | typeSection
                              | ('class')? varSection
                              ;
-classHelperDecl              : 'class' 'helper' (classParent)? 'for' typeId (classHelperItem)* 'end' //CHANGED, we only need "for" class name
+classHelperDecl              : 'class' 'helper' (classParent)? FOR typeId (classHelperItem)* END //CHANGED, we only need "for" class name
                              ;
 classHelperItem              : visibility
                              | classMethod
                              | classProperty
                              | ('class')? varSection
                              ;
-interfaceTypeDecl            : interfaceKey (classParent)? (interfaceGuid)? (interfaceItem)* 'end' 
+interfaceTypeDecl            : interfaceKey (classParent)? (interfaceGuid)? (interfaceItem)* END 
                              | interfaceKey (classParent)? 
                              ;
 interfaceKey                 : 'interface'
@@ -269,7 +272,7 @@ interfaceGuid                : '[' QuotedString ']'
 interfaceItem                : classMethod
                              | ('class')? classProperty
                              ;
-objectDecl                   : 'object' (classParent)? (objectItem)* 'end' 
+objectDecl                   : 'object' (classParent)? (objectItem)* END 
                              ;
 objectItem                   : visibility
                              | classMethod
@@ -278,9 +281,9 @@ objectItem                   : visibility
 recordDecl                   : simpleRecord
                              | variantRecord
                              ;
-simpleRecord                 : 'record' (recordField)* (recordItem)* 'end' 
+simpleRecord                 : 'record' (recordField)* (recordItem)* END 
                              ;
-variantRecord                : 'record' (recordField)* recordVariantSection 'end' 
+variantRecord                : 'record' (recordField)* recordVariantSection END 
                              ;
 recordItem                   : visibility     //ADDED
                              | classMethod
@@ -290,35 +293,35 @@ recordItem                   : visibility     //ADDED
                              | recordField
                              | ('class')? varSection
                              ;
-recordField                  : identList ':' typeDecl (hintingDirective)* (';')?  //CHANGED not needed ; at the end
+recordField                  : identList ':' typeDecl (hintingDirective)* (SEMI)?  //CHANGED not needed ; at the end
                              ;
-recordVariantField           : identList ':' typeDecl (hintingDirective)* (';') ?
+recordVariantField           : identList ':' typeDecl (hintingDirective)* (SEMI) ?
                              ;
-recordVariantSection         : 'case' (ident ':')? typeDecl 'of' (recordVariant | ';') (recordVariant | ';')*
+recordVariantSection         : 'case' (ident ':')? typeDecl 'of' (recordVariant | SEMI) (recordVariant | SEMI)*
                              ;
-recordVariant                : constExpression (',' constExpression)* ':' '(' (recordVariantField)* ')'   //CHANGED to recordVariantField from recordField
+recordVariant                : constExpression (COMMA constExpression)* ':' '(' (recordVariantField)* ')'   //CHANGED to recordVariantField from recordField
                              ;
-recordHelperDecl             : 'record' 'helper' 'for' typeId (recordHelperItem)* 'end'
+recordHelperDecl             : 'record' 'helper' FOR typeId (recordHelperItem)* END
                              ;
 recordHelperItem             : visibility
                              | classMethod
                              | classProperty
                              ;
-classMethod                  : (customAttribute)? ('class')? methodKey ident (genericDefinition)? (formalParameterSection)? ';' (methodDirective)* 
-                             | (customAttribute)? ('class')? 'function' ident (genericDefinition)? (formalParameterSection)? ':' (customAttribute)? typeDecl ';' (methodDirective)*
-                             | (customAttribute)? ('class')? 'operator' ident (genericDefinition)? (formalParameterSection)? ':' (customAttribute)? typeDecl ';'
+classMethod                  : (customAttribute)? ('class')? methodKey ident (genericDefinition)? (formalParameterSection)? SEMI (methodDirective)* 
+                             | (customAttribute)? ('class')? 'function' ident (genericDefinition)? (formalParameterSection)? ':' (customAttribute)? typeDecl SEMI (methodDirective)*
+                             | (customAttribute)? ('class')? 'operator' ident (genericDefinition)? (formalParameterSection)? ':' (customAttribute)? typeDecl SEMI
                              ;                             
-classField                   : (customAttribute)? identList ':' typeDecl ';' (hintingDirective)* 
+classField                   : (customAttribute)? identList ':' typeDecl SEMI (hintingDirective)* 
                              ;
-classProperty                : (customAttribute)? ('class')? 'property' ident (classPropertyArray)? (':' genericTypeIdent)? (classPropertyIndex)? (classPropertySpecifier)* ';' (classPropertyEndSpecifier)*
+classProperty                : (customAttribute)? ('class')? 'property' ident (classPropertyArray)? (':' genericTypeIdent)? (classPropertyIndex)? (classPropertySpecifier)* SEMI (classPropertyEndSpecifier)*
                               // CHANGED added (classPropertySpecifier)* at end for "default;"
                               // CHANGEDD to genericTypeIdent for "property QueryBuilder : IQueryBuilder<GenericRecord>"
                              ;
 classPropertyArray           : '[' formalParameterList ']'
                              ;
-classPropertyIndex           : 'index' expression (';')?  //CHANGED to (';')?
+classPropertyIndex           : 'index' expression (SEMI)?  //CHANGED to (SEMI)?
                              ;
-classPropertySpecifier       : classPropertyReadWrite   //CHANGED removed ';'
+classPropertySpecifier       : classPropertyReadWrite   //CHANGED removed SEMI
                              | classPropertyDispInterface
                              | STORED expression
                              | 'default' expression
@@ -326,17 +329,17 @@ classPropertySpecifier       : classPropertyReadWrite   //CHANGED removed ';'
                              | 'nodefault' )
                              | IMPLEMENTS typeId
                              ;
-classPropertyEndSpecifier    : STORED expression ';'    //ADDED used in classProperty at end
-                             | 'default' expression ';'
-                             | 'default' ';'             
-                             | 'nodefault' ';'
+classPropertyEndSpecifier    : STORED expression SEMI    //ADDED used in classProperty at end
+                             | 'default' expression SEMI
+                             | 'default' SEMI             
+                             | 'nodefault' SEMI
                              ;
 
 classPropertyReadWrite       : 'read' qualifiedIdent ('[' expression ']')?  // Waarom qualified ident???  //ADDED []
                              | 'write' qualifiedIdent ('[' expression ']')? //ADDED []
                              ;
-classPropertyDispInterface   : 'readonly' ';'
-                             | 'writeonly' ';'
+classPropertyDispInterface   : 'readonly' SEMI
+                             | 'writeonly' SEMI
                              | dispIDDirective
                              ;
 visibility                   : (STRICT)? 'protected' 
@@ -348,10 +351,10 @@ visibility                   : (STRICT)? 'protected'
 //****************************
 //section procedure
 //****************************
-exportedProcHeading          : 'procedure' ident (formalParameterSection)? ':' (customAttribute)? typeDecl ';' (functionDirective)*
-                             | 'function' ident (formalParameterSection)? ';' (functionDirective)*
+exportedProcHeading          : 'procedure' ident (formalParameterSection)? ':' (customAttribute)? typeDecl SEMI (functionDirective)*
+                             | 'function' ident (formalParameterSection)? SEMI (functionDirective)*
                              ;
-methodDecl                   : methodDeclHeading ';' (methodDirective)* (methodBody)? 
+methodDecl                   : methodDeclHeading SEMI (methodDirective)* (methodBody)? 
                              ;
 methodDeclHeading            : (customAttribute)? ('class')?  methodKey methodName (formalParameterSection)?
                              | (customAttribute)? ('class')? 'function' methodName (formalParameterSection)? (':' (customAttribute)? typeDecl)?
@@ -361,16 +364,16 @@ methodKey                    : 'procedure'
                              | 'constructor'
                              | 'destructor'
                              ;
-methodName                   : ident (genericDefinition)? ('.' ident (genericDefinition)?)? '.' ident (genericDefinition)?
+methodName                   : ident (genericDefinition)? (DOT ident (genericDefinition)?)? DOT ident (genericDefinition)?
                              ;                             
-procDecl                     : procDeclHeading ';' (functionDirective)* (procBody)?     //CHANGED
+procDecl                     : procDeclHeading SEMI (functionDirective)* (procBody)?     //CHANGED
                              ;
 procDeclHeading              : (customAttribute)? 'procedure' ident (formalParameterSection)?             //CHANGED
                              | (customAttribute)? 'function' ident (formalParameterSection)? ':' typeDecl
                              ;
 formalParameterSection       : '(' (formalParameterList)? ')' 
                              ;
-formalParameterList          : formalParameter (';' formalParameter)* 
+formalParameterList          : formalParameter (SEMI formalParameter)* 
                              ;
 formalParameter              : //(customAttribute)? 
                                (parmType)? identListFlat (':' typeDecl)? ('=' expression)? 
@@ -380,11 +383,11 @@ parmType                     : 'const'
                              | 'var'
                              | 'out'
                              ;
-methodBody                   : block ';' 
+methodBody                   : block SEMI 
                              ;
-procBody                     : 'forward' ';' (functionDirective)*   // CHECKEN ; en directive plaats!
+procBody                     : 'forward' SEMI (functionDirective)*   // CHECKEN ; en directive plaats!
                              | 'external' ('name' expression | 'index' expression)* (functionDirective)* // CHECKEN directive plaats
-                             | block ';'
+                             | block SEMI
                              ;
 //****************************
 //section customAttributes
@@ -419,7 +422,7 @@ factor                       : '@' factor
                              | 'true'
                              | 'false'
                              | 'nil' )
-                             | '(' expression ')' ('^')? ('.' expression)?        //CHANGED, added  ('^')? ('.' qualifiedIdent)?
+                             | '(' expression ')' ('^')? (DOT expression)?        //CHANGED, added  ('^')? (DOT qualifiedIdent)?
                              | stringFactor
                              | setSection
                              | designator
@@ -428,18 +431,20 @@ factor                       : '@' factor
 stringFactor                 : ControlString (QuotedString ControlString)* (QuotedString)?
                              | QuotedString (ControlString QuotedString)* (ControlString)?
                              ;
-setSection                   : '[' (expression ((',' | '..') expression)*)? ']'
+setSection                   : '[' (expression ((COMMA | '..') expression)*)? ']'
                              ;
 
-designator                   : ('inherited')? ( (namespacedQualifiedIdent | typeId) )? (designatorItem)*
+designator                   : INHERITED // ('inherited')? ( (namespacedQualifiedIdent | typeId) )? (designatorItem)*
+                             | typeId
+                             | designatorItem+
                              ;
 designatorItem               : '^'
-                             | ('.' | '@') ident              //CHANGED added '@'
-                             | ('<' genericTypeIdent (',' genericTypeIdent)* '>')       //ADDED for proc<sth, sth>.foo;
+                             | (DOT | '@') ident              //CHANGED added '@'
+                             | '<' genericTypeIdent (COMMA genericTypeIdent)* '>'       //ADDED for proc<sth, sth>.foo;
                              | '[' expressionList ']'
-                             | '(' (expression (colonConstruct)? (',' expression (colonConstruct)?)*)? ')' 
+                             | '(' (expression (colonConstruct)? (COMMA expression (colonConstruct)?)*)? ')' 
                              ;
-expressionList               : expression (',' expression)*
+expressionList               : expression (COMMA expression)*
                              ;
 colonConstruct               : ':' expression (':' expression)?
                              ;
@@ -485,30 +490,30 @@ statement                    : ifStatement
                              ;
 ifStatement                  : 'if' expression 'then' statement ('else' statement)? 
                              ;
-caseStatement                : 'case' expression 'of' (caseItem)* ('else' statementList (';')?)? 'end'
+caseStatement                : 'case' expression 'of' (caseItem)* ('else' statementList (SEMI)?)? END
                              ;
-caseItem                     : caseLabel (',' caseLabel)* ':' statement (';')? // checken of ; sep of scheider is
+caseItem                     : caseLabel (COMMA caseLabel)* ':' statement (SEMI)? // checken of ; sep of scheider is
                              ;
 caseLabel                    : expression ('..' expression)?
                              ;
 repeatStatement              : 'repeat' (statementList)? 'until' expression
                              ;
-whileStatement               : 'while' expression 'do' statement
+whileStatement               : 'while' expression DO statement
                              ;
-forStatement                 : 'for' designator ':=' expression 'to' expression 'do' statement
-                             | 'for' designator ':=' expression 'downto' expression 'do' statement
-                             | 'for' designator 'in' expression 'do' statement
+forStatement                 : FOR designator ASSIGN expression 'to' expression DO statement
+                             | FOR designator ASSIGN expression 'downto' expression DO statement
+                             | FOR designator 'in' expression DO statement
                              ;
-withStatement                : 'with' withItem 'do' statement
+withStatement                : 'with' withItem DO statement
                              ;
 withItem                     : designator 'as' designator       //ADDED
-                             | designator (',' designator)*
+                             | designator (COMMA designator)*
                              ;
-compoundStatement            : 'begin' (statementList)? 'end' 
+compoundStatement            : 'begin' (statementList)? END 
                              ;
-statementList                : (statement)? (';' (statement)?)*
+statementList                : statement (SEMI (statement)?)*
                              ;
-simpleStatement              : designator ':=' expression
+simpleStatement              : designator ASSIGN expression
                              | designator // call
                              | gotoStatement
                              ;
@@ -520,8 +525,8 @@ gotoStatement                : 'goto' label
 //****************************
 //section constExpression
 //****************************
-constExpression              : '(' recordConstExpression (';' recordConstExpression)* ')' //CHANGED reversed order
-                             | '(' constExpression (',' constExpression)* ')'
+constExpression              : '(' recordConstExpression (SEMI recordConstExpression)* ')' //CHANGED reversed order
+                             | '(' constExpression (COMMA constExpression)* ')'
                              | expression
                              ;
 recordConstExpression        : ident ':' constExpression
@@ -529,25 +534,25 @@ recordConstExpression        : ident ':' constExpression
 //****************************
 //section exceptionStatement
 //****************************
-tryStatement                 : 'try' (statementList)? 'except' handlerList 'end'  
-                             | 'try' (statementList)? 'finally' (statementList)? 'end'
+tryStatement                 : TRY (statementList)? EXCEPT handlerList END  
+                             | TRY (statementList)? FINALLY (statementList)? END
                              ;
 handlerList                  : (handler)* ('else' statementList)?
                              | statementList
                              ;
-handler                      : 'on' (handlerIdent)? typeId 'do' handlerStatement  //CHANGED - ; is not required ; handlerIdent not required, example:  "on einvalidoperation do;"
+handler                      : 'on' (handlerIdent)? typeId DO handlerStatement  //CHANGED - ; is not required ; handlerIdent not required, example:  "on einvalidoperation do;"
                              ;
 handlerIdent                 : ident ':'
                              ;
-handlerStatement             : statement (';')?
-                             | ';'
+handlerStatement             : statement (SEMI)?
+                             | SEMI
                              ;
 raiseStatement               : 'raise' (designator)? (AT designator)? // CHECKEN!
                              ;           
 //****************************
 //section AssemblerStatement
 //****************************
-assemblerStatement           : 'asm' ~('end')* 'end'    //ADDED we don't realy care about assembler statements, since they don't contribute to
+assemblerStatement           : 'asm' ~(END)* END    //ADDED we don't realy care about assembler statements, since they don't contribute to
                              ;                //any measure, just skip, allow all
 //****************************
 //section directive
@@ -558,7 +563,7 @@ methodDirective              : reintroduceDirective         // 1
                              | abstractDirective            // 3 virtual;
                              | inlineDirective              // 4 niet virtual or dynamic
                              | callConvention               // 4
-                             | hintingDirective ';'       // 4 (niet abstract)
+                             | hintingDirective SEMI       // 4 (niet abstract)
                              | oldCallConventionDirective   // 1
                              | dispIDDirective
                              ;
@@ -566,57 +571,57 @@ functionDirective            : overloadDirective          // 1
                              | inlineDirective            // 1
                              | callConvention             // 1
                              | oldCallConventionDirective // 1
-                             | hintingDirective ';'      // 1
+                             | hintingDirective SEMI      // 1
                              | (callConventionNoSemi)? externalDirective          // 1
-                             | 'unsafe' ';'              // 1 .net?
+                             | 'unsafe' SEMI              // 1 .net?
                              ;
-reintroduceDirective         : 'reintroduce' ';'
+reintroduceDirective         : 'reintroduce' SEMI
                              ;
-overloadDirective            : 'overload' (';')?    //CHANGE ; not needed
+overloadDirective            : 'overload' (SEMI)?    //CHANGE ; not needed
                              ;
-bindingDirective             : 'message' expression ';'
-                             | 'static' ';'
-                             | 'dynamic' ';'
-                             | 'override' ';'
-                             | 'virtual' ';'
+bindingDirective             : 'message' expression SEMI
+                             | 'static' SEMI
+                             | 'dynamic' SEMI
+                             | 'override' SEMI
+                             | 'virtual' SEMI
                              ;
-abstractDirective            : 'abstract' ';'
-                             | 'final' ';'
+abstractDirective            : 'abstract' SEMI
+                             | 'final' SEMI
                              ;
-inlineDirective              : 'inline' ';'
-                             | 'assembler' ';' // deprecated
+inlineDirective              : 'inline' SEMI
+                             | 'assembler' SEMI // deprecated
                              ;
-callConvention               : 'cdecl' ';'    //
-                             | 'pascal' ';'   //
-                             | 'register' ';' //
-                             | 'safecall' ';' //
-                             | 'stdcall' ';'  //
-                             | 'export' ';'   // deprecated
+callConvention               : 'cdecl' SEMI    //
+                             | 'pascal' SEMI   //
+                             | 'register' SEMI //
+                             | 'safecall' SEMI //
+                             | 'stdcall' SEMI  //
+                             | 'export' SEMI   // deprecated
                              ;
-callConventionNoSemi         : 'cdecl'    //    //ADDED for procedureType error fixing, without ';' at the end
+callConventionNoSemi         : 'cdecl'    //    //ADDED for procedureType error fixing, without SEMI at the end
                              | 'pascal'   //
                              | 'register' //
                              | 'safecall' //
                              | 'stdcall'  //
                              | 'export'   // deprecated
                              ;
-oldCallConventionDirective   : 'far' ';'      // deprecated
-                             | 'local' ';'    // niet in windows maakt functie niet exporteerbaar
-                             | 'near' ';'     // deprecated
+oldCallConventionDirective   : 'far' SEMI      // deprecated
+                             | 'local' SEMI    // niet in windows maakt functie niet exporteerbaar
+                             | 'near' SEMI     // deprecated
                              ;
 hintingDirective             : 'deprecated' (stringFactor)?
                              | ( 'experimental'  // added 2006
                              | 'platform'
                              | 'library' )
                              ;
-externalDirective            : 'varargs' ';'   // alleen bij external cdecl
-                             | 'external' ';'
-                             | 'external' constExpression (externalSpecifier)* ';' // expression : dll name
+externalDirective            : 'varargs' SEMI   // alleen bij external cdecl
+                             | 'external' SEMI
+                             | 'external' constExpression (externalSpecifier)* SEMI // expression : dll name
                              ;
 externalSpecifier            : 'name' constExpression
                              | 'index' constExpression   // specific to a platform
                              ;
-dispIDDirective              : 'dispid' expression ';'
+dispIDDirective              : 'dispid' expression SEMI
                              ;
 //****************************
 ////section general
@@ -629,9 +634,9 @@ usedKeywordsAsNames          : (NAME | READONLY | ADD | AT | MESSAGE | POINTER |
                              | (READ | WRITE | REGISTER | VARIANT | OPERATOR | REMOVE | LOCAL | REFERENCE | CONTAINS | FINAL)
                              | (BREAK | EXIT | STRICT | OUT | OBJECT | EXPORT | ANSISTRING | IMPLEMENTS | STORED)
                              ;                           
-identList                    : ident (',' ident)* 
+identList                    : ident (COMMA ident)* 
                              ;
-identListFlat                : ident (',' ident)*    //ADDED used in formalParemeter
+identListFlat                : ident (COMMA ident)*    //ADDED used in formalParemeter
                              ;                                                          
 label                        : ( TkIdentifier | TkIntNum | TkHexNum ) | usedKeywordsAsNames 
                              ;
@@ -640,11 +645,11 @@ intNum                       : TkIntNum
                              ;                             
 realNum                      : TkRealNum
                              ;                             
-namespacedQualifiedIdent     : (namespaceName '.')? qualifiedIdent
+namespacedQualifiedIdent     : (namespaceName DOT)? qualifiedIdent
                              ;
-namespaceName                : ident ('.' ident)*
+namespaceName                : ident (DOT ident)*
                              ;
-qualifiedIdent               :  (ident '.')*  ident   //must stay the way it is, with '.' for proper class method identyfication
+qualifiedIdent               :  (ident DOT)*  ident   //must stay the way it is, with DOT for proper class method identyfication
                              ;
                                    
 // KEYWORDS
@@ -863,11 +868,11 @@ TkIdentifier            : (Alpha | '_') (Alpha | Digit | '_')*
                         ;  
 TkIntNum                : Digitseq
                         ;
-TkRealNum               : Digitseq ('.' Digitseq)? (('e'|'E') ('+'|'-')? Digitseq)?  //CHANGED
+TkRealNum               : Digitseq (DOT Digitseq)? ('e' ('+'|'-')? Digitseq)?  //CHANGED
                         ;
 TkHexNum                : '$' Hexdigitseq
                         ;
-TkAsmHexNum             : Hexdigitseq ('h'|'H')
+TkAsmHexNum             : Hexdigitseq ('h')
                         ;
 TkAsmHexLabel           : Hexdigitseq ':'
                         ;

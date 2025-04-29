@@ -1,7 +1,7 @@
 ﻿import { InitializeResult, InitializeParams, TextDocumentSyncKind, CancellationToken, CancellationTokenSource } from "vscode-languageserver";
-import log from "../log"
-import {connection, server} from "../server"
-import { LspServer } from "../core/lspServer";
+import log from "../log";
+import { connection } from "../server";
+import { fileService } from "../fileService"
 
 
 export let hasConfigurationCapability: boolean = false;
@@ -14,7 +14,8 @@ export const initialize = (params: InitializeParams): InitializeResult => {
 	connection.window.showInformationMessage(
 		"onInitialize LSP"
 	)
-	server.initialize(params, new CancellationTokenSource().token);
+	
+	fileService.workspaceFolders = params.workspaceFolders!
 	let capabilities = params.capabilities;
 
 	// Does the client support the `workspace/configuration` request?
@@ -36,7 +37,7 @@ export const initialize = (params: InitializeParams): InitializeResult => {
 			textDocumentSync: TextDocumentSyncKind.Incremental,
 			// Tell the client that this server supports code completion.
 			completionProvider: {
-				resolveProvider: true
+				resolveProvider: true,
 			}
 		},
 		serverInfo: {
