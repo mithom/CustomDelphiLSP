@@ -10,7 +10,7 @@
     "vscode": "^1.99.3"
   },
   "activationEvents": [
-    "onLanguage:objectpascal"
+    
   ],
   "main": "./client/out/extension",
   "scripts": {
@@ -47,14 +47,37 @@
         "id": "objectpascal",
         "extensions": [
           ".pas",
-          ".dpr"
+          ".dpr",
+          ".pp",
+          ".inc",
+          ".dpk"
         ],
         "aliases": [
-          "delphi",
-          "del",
+          "Delphi",
+          "Del",
           "objectpascal",
           "opascal"
-        ]
+        ],
+        "configuration": "./language-configuration.json"
+      }
+    ],
+    "grammars": [
+      {
+        "language": "objectpascal",
+        "scopeName": "source.objectpascal",
+        "path": "./syntaxes/objectpascal.plist"
+      }
+    ],
+    "keybindings": [
+      {
+        "key": "ctrl+shift+up",
+        "command": "editor.action.revealDeclaration",
+        "when": "editorTextFocus && editorLangId == objectpascal"
+      },
+      {
+        "key": "ctrl+shift+down",
+        "command": "editor.action.goToImplementation",
+        "when": "editorTextFocus && editorLangId == objectpascal"
       }
     ]
   }
