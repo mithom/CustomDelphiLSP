@@ -1,0 +1,122 @@
+﻿{
+	"scopeName": "source.asqit",
+	"patterns": [
+		{
+			"begin": "^\\s*\\[",
+			"end": "]",
+			"name": "entity.name.type.interface.asqit",
+			"captures": {
+				"0": {
+					"name": "declaration.section.asqit"
+				}
+			}
+		},
+		{
+			"include": "#@eval"
+		},
+		{
+			"begin": "(?<=\\s*\\b\\w+(?:\\.\\w+)*\\.)(?i:(ENABLEDIF|VISIBLEIF|READONLYIF|propertySource))(?=\\s*=)",
+			"end": "\\n",
+			"captures": {
+				"0": {
+					"name": "entity.name.function.decorator.asqit"
+				}
+			},
+			"patterns": [
+				{
+					"include": "#expression"
+				}
+			]
+		},
+		{
+			"include": "#vbscript"
+		},
+		{
+			"include": "#python"
+		}
+	],
+	"repository": {
+		"expression": {
+			"patterns": [
+				{
+					"include": "#keyword"
+				},
+				{
+					"include": "#strictKeyword"
+				},
+				{
+					"include": "#@eval"
+				},
+				{
+					"include": "#operator"
+				},
+				{
+					"include": "#constant"
+				}
+			]
+		},
+		"@eval": {
+			"begin": "@+\\[",
+			"end": "]",
+			"name": "expression.eval",
+			"captures": {
+				"0": {
+					"name": "source.asqit"
+				}
+			},
+			"patterns": [
+				{
+					"include": "#expression"
+				}
+			]
+		},
+		"strictKeyword": {
+			"match": "\\b(?<!\\.)(?i:(IF|THEN|ELSE))\\b",
+			"name": "keyword.asqit"
+		},
+		"keyword": {
+			"match": "\\b(?i:(TRANSLATE|TODAY|LENGTH|NOW|POOL NAME OF|String))\\b",
+			"name": "keyword.asqit"
+		},
+		"vbscript": {
+			"begin": "\\{\\$(?i:Script Begin)\\}",
+			"end": "\\{\\$(?i:Script End)\\}",
+			"name": "script.block.vb",
+			"contentName": "meta.embedded.block.vbs",
+			"captures": {
+				"0": {
+					"name": "entity.name.function.preprocessor"
+				}
+			},
+			"patterns": [
+				{
+					"include": "source.vbs"
+				}
+			]
+		},
+		"python": {
+			"begin": "\\{\\$(?i:python Begin)\\}",
+			"end": "\\{\\$(?i:python End)\\}",
+			"name": "script.block.python",
+			"contentName": "meta.embedded.block.python",
+			"captures": {
+				"0": {
+					"name": "entity.name.function.preprocessor"
+				}
+			},
+			"patterns": [
+				{
+					"include": "source.python"
+				}
+			]
+		},
+		"operator": {
+			"match": "\\b(?i:(\\=|\\>|\\<|\\+|\\-|\\*|\\/))\\b",
+			"name": "keyword.operator.asqit"
+		},
+		"constant": {
+			"match": "((\\$([0-9a-fA-F])*)|\\b(([0-9]+\\.?[0-9]*)|(\\.[0-9]+))\\b)",
+			"name": "constant.numeric.asqit"
+		}
+	}
+}

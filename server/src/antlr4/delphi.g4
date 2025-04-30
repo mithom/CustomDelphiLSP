@@ -24,76 +24,100 @@
  * Updated again by Thomas Michiels to correct mistakes/remove personal stuff
  */
 options {
-	caseInsensitive = true;
+                             caseInsensitive = true;
 }
 
-@lexer::namespace{DelphiGrammar}
-@parser::namespace{DelphiGrammar}
+@lexer::namespace {DelphiGrammar}
+@parser::namespace {DelphiGrammar}
 //****************************
 //section start
 //****************************
-file                         : program | library | unit | packageE
+file
+                             : program | library | unit | packageE
                              ;
 //****************************
 //section fileDefinition
 //****************************
 
-program                      : programHead? usesFileClause? block DOT
+program
+                             : programHead? usesFileClause? block DOT
                              ;
-programHead                  : PROGRAM namespaceName programParmSeq? SEMI
+programHead
+                             : PROGRAM namespaceName programParmSeq? SEMI
                              ;
-programParmSeq               : LPAREN (ident (COMMA ident)* )? RPAREN
+programParmSeq
+                             : LPAREN (ident (COMMA ident)*)? RPAREN
                              ;
-library                      : libraryHead usesFileClause? block DOT
+library
+                             : libraryHead usesFileClause? block DOT
                              ;
-libraryHead                  : LIBRARY namespaceName hintingDirective* SEMI
+libraryHead
+                             : LIBRARY namespaceName hintingDirective* SEMI
                              ;
-packageE                     : packageHead requiresClause containsClause? END DOT
+packageE
+                             : packageHead requiresClause containsClause? END DOT
                              ;
-packageHead                  : PACKAGE namespaceName SEMI
+packageHead
+                             : PACKAGE namespaceName SEMI
                              ;
-unit                         : unitHead unitInterface unitImplementation unitBlock DOT
+unit
+                             : unitHead unitInterface unitImplementation unitBlock DOT
                              ;
-unitHead                     : UNIT namespaceName hintingDirective* SEMI
+unitHead
+                             : UNIT namespaceName hintingDirective* SEMI
                              ;
-unitInterface                : INTERFACE usesClause? interfaceDecl*
+unitInterface
+                             : INTERFACE usesClause? interfaceDecl*
                              ;
-unitImplementation           : IMPLEMENTATION usesClause? declSection*
+unitImplementation
+                             : IMPLEMENTATION usesClause? declSection*
                              ;
-unitBlock                    : unitInitialization END
-                             | compoundStatement
-                             | END
+unitBlock
+                             : unitInitialization END | compoundStatement | END
                              ;
-unitInitialization           : INITIALIZATION statementList unitFinalization?
+unitInitialization
+                             : INITIALIZATION statementList unitFinalization?
                              ;
-unitFinalization             : FINALIZATION statementList
+unitFinalization
+                             : FINALIZATION statementList
                              ;
 //****************************
 //section fileUsage
 //****************************
-containsClause               : CONTAINS namespaceFileNameList
+containsClause
+                             : CONTAINS namespaceFileNameList
                              ;
-requiresClause               : REQUIRES namespaceNameList
+requiresClause
+                             : REQUIRES namespaceNameList
                              ;
-usesClause                   : USES namespaceNameList 
+usesClause
+                             : USES namespaceNameList
                              ;
-usesFileClause               : USES namespaceFileNameList
+usesFileClause
+                             : USES namespaceFileNameList
                              ;
-namespaceFileNameList        : namespaceFileName (COMMA namespaceFileName)* SEMI
+namespaceFileNameList
+                             : namespaceFileName (
+                                                          COMMA namespaceFileName
+                             )* SEMI
                              ;
-namespaceFileName            : namespaceName (IN QuotedString)?
+namespaceFileName
+                             : namespaceName (IN QuotedString)?
                              ;
-namespaceNameList            : namespaceName (COMMA namespaceName)* SEMI
+namespaceNameList
+                             : namespaceName (COMMA namespaceName)* SEMI
                              ;
 //****************************
 //section declaration
 //****************************
-block                        : declSection* blockBody?
+block
+                             : declSection* blockBody?
                              ;
-blockBody                    : compoundStatement
-                             | assemblerStatement
+blockBody
+                             : compoundStatement | assemblerStatement
                              ;
-declSection                  : labelDeclSection
+declSection
+                             : labelDeclSection
                              | constSection
                              | typeSection
                              | varSection
@@ -102,7 +126,8 @@ declSection                  : labelDeclSection
                              | procDecl
                              | exportsSection
                              ;
-interfaceDecl                : procDecl
+interfaceDecl
+                             : procDecl
                              | methodDecl
                              | typeSection
                              | varSection
@@ -110,144 +135,207 @@ interfaceDecl                : procDecl
                              | exportsSection
                              | constSection
                              ;
-labelDeclSection             : LABEL label (COMMA label)* SEMI
+labelDeclSection
+                             : LABEL label (COMMA label)* SEMI
                              ;
-constSection                 : constKey constDeclaration*  //CHANGED, erased one constDeclaration, for: "const {$include versioninfo.inc }"
+constSection
+                             : constKey constDeclaration*
+                             //CHANGED, erased one constDeclaration, for: "const {$include versioninfo.inc }"
                              ;
-constKey                     : CONST
-                             | RESOURCESTRING
+constKey
+                             : CONST | RESOURCESTRING
                              ;
-constDeclaration             : ident (COLON typeDecl)? EQUAL constExpression hintingDirective* SEMI
+constDeclaration
+                             : ident (COLON typeDecl)? EQUAL constExpression hintingDirective* SEMI
                              ;
-typeSection                  : TYPE typeDeclaration typeDeclaration*
+typeSection
+                             : TYPE typeDeclaration typeDeclaration*
                              ;
-typeDeclaration              : genericTypeIdent EQUAL typeDecl hintingDirective* SEMI
+typeDeclaration
+                             : genericTypeIdent EQUAL typeDecl hintingDirective* SEMI
                              ;
-varSection                   : varKey varDeclaration varDeclaration*
+varSection
+                             : varKey varDeclaration varDeclaration*
                              ;
-varKey                       : VAR
-                             | THREADVAR
+varKey
+                             : VAR | THREADVAR
                              ;
 // threadvar geen initializations alleen globaal
-varDeclaration               : identListFlat COLON typeDecl varValueSpec? hintingDirective* SEMI
+varDeclaration
+                             : identListFlat COLON typeDecl varValueSpec? hintingDirective* SEMI
                              ;
-varValueSpec                 : ABSOLUTE ident
+varValueSpec
+                             : ABSOLUTE ident
                              | ABSOLUTE constExpression
                              | EQUAL constExpression
                              ;
-exportsSection               : EXPORTS ident exportItem (COMMA ident exportItem)* SEMI
+exportsSection
+                             : EXPORTS ident exportItem (
+                                                          COMMA ident exportItem
+                             )* SEMI
                              ;
-exportItem                   : (LPAREN formalParameterList? RPAREN)? (INDEX expression)? (NAME expression)? ('resident')?
+exportItem
+                             : (
+                                                          LPAREN formalParameterList? RPAREN
+                             )? (INDEX expression)? (
+                                                          NAME expression
+                             )? ('resident')?
                              ;
 //****************************
 //section type
 //****************************
-typeDecl                     : strucType
+typeDecl
+                             : strucType
                              | pointerType
                              | stringType
-                             | procedureType 
+                             | procedureType
                              | variantType
                              | TYPE? typeId genericPostfix?
                              | simpleType
                              ;
-strucType                    : PACKED? strucTypePart 
+strucType
+                             : PACKED? strucTypePart
                              ;
-strucTypePart                : arrayType
-                             | setType
-                             | fileType
-                             | classDecl
-                             ;
-
-arrayType                    :  ARRAY (LBRACK arrayIndex? (COMMA arrayIndex?)* RBRACK)? OF arraySubType
-                                     //CHANGED we only need type info
+strucTypePart
+                             : arrayType | setType | fileType | classDecl
                              ;
 
-arrayIndex                   : typeId
-                             | expression '..' expression
+arrayType
+                             : ARRAY (
+                                                          LBRACK arrayIndex? (
+                                                                                       COMMA
+                                                                                       arrayIndex?
+                                                          )* RBRACK
+                             )? OF arraySubType
+                             //CHANGED we only need type info
                              ;
 
-arraySubType                 : CONST
-                             | typeDecl
+arrayIndex
+                             : typeId | expression '..' expression
                              ;
-setType                      : SET OF typeDecl          //CHANGED we only need type info
+
+arraySubType
+                             : CONST | typeDecl
+                             ;
+setType
+                             : SET OF typeDecl //CHANGED we only need type info
                              ;
 // set type alleen ordinal of subrange type
-fileType                     : FILE (OF typeDecl)?
+fileType
+                             : FILE (OF typeDecl)?
                              ;
-pointerType                  : POINTER2 typeDecl
-                             | POINTER
+pointerType
+                             : POINTER2 typeDecl | POINTER
                              ;
-stringType                   : STRING (LBRACK expression RBRACK)? 
+stringType
+                             : STRING (LBRACK expression RBRACK)?
                              | TYPE? ANSISTRING codePageNumber?
                              ;
-codePageNumber               : LPAREN intNum RPAREN
+codePageNumber
+                             : LPAREN intNum RPAREN
                              ;
-procedureType                : methodType
+procedureType
+                             : methodType
                              | simpleProcedureType
                              | procedureReference
                              ;
-methodType                   : procedureTypeHeading OF OBJECT
+methodType
+                             : procedureTypeHeading OF OBJECT
                              ;
-simpleProcedureType          : procedureTypeHeading ( SEMI? callConventionNoSemi)?
+simpleProcedureType
+                             : procedureTypeHeading (
+                                                          SEMI? callConventionNoSemi
+                             )?
                              ;
-procedureReference           : REFERENCE TO procedureTypeHeading
+procedureReference
+                             : REFERENCE TO procedureTypeHeading
                              ;
-procedureTypeHeading         : FUNCTION formalParameterSection? COLON typeDecl 
+procedureTypeHeading
+                             : FUNCTION formalParameterSection? COLON typeDecl
                              | PROCEDURE formalParameterSection?
                              ;
-variantType                  : 'variant' // SzJ TODO TEMP
+variantType
+                             : 'variant' // SzJ TODO TEMP
                              ;
-simpleType                   : ident
-                             | subRangeType
-                             | enumType
+simpleType
+                             : ident | subRangeType | enumType
                              ;
-subRangeType                 : constExpression ('..' constExpression)?
+subRangeType
+                             : constExpression ('..' constExpression)?
                              ;
-enumType                     : LPAREN ident (EQUAL expression)? (COMMA ident (EQUAL expression)? )* RPAREN
+enumType
+                             : LPAREN ident (EQUAL expression)? (
+                                                          COMMA ident (
+                                                                                       EQUAL
+                                                                                       expression
+                                                          )?
+                             )* RPAREN
                              ;
-typeId                       : namespacedQualifiedIdent
+typeId
+                             : namespacedQualifiedIdent
                              ;
 //****************************
 //section generics
 //****************************
-genericTypeIdent             : qualifiedIdent genericDefinition?     //CHANGED we don't need <Type> data, it produced empty nodes
+genericTypeIdent
+                             : qualifiedIdent genericDefinition?
+                             //CHANGED we don't need <Type> data, it produced empty nodes
                              ;
-genericDefinition            : simpleGenericDefinition
+genericDefinition
+                             : simpleGenericDefinition
                              | constrainedGenericDefinition
                              ;
-simpleGenericDefinition      : LT ident (COMMA ident)* GT
+simpleGenericDefinition
+                             : LT ident (COMMA ident)* GT
                              ;
-constrainedGenericDefinition : LT constrainedGeneric (SEMI constrainedGeneric)* GT
+constrainedGenericDefinition
+                             : LT constrainedGeneric (
+                                                          SEMI constrainedGeneric
+                             )* GT
                              ;
-constrainedGeneric           : ident (COLON genericConstraint (COMMA genericConstraint)*)?
+constrainedGeneric
+                             : ident (
+                                                          COLON genericConstraint (
+                                                                                       COMMA
+                                                                                       genericConstraint
+                                                          )*
+                             )?
                              ;
-genericConstraint            : ident
-                             | ( RECORD | CLASS | CONSTRUCTOR )
+genericConstraint
+                             : ident | ( RECORD | CLASS | CONSTRUCTOR)
                              ;
-genericPostfix               : LT typeDecl (COMMA typeDecl)* GT
+genericPostfix
+                             : LT typeDecl (COMMA typeDecl)* GT
                              ;
 //****************************
 //section class
 //****************************
-classDecl                    : classTypeTypeDecl
-                             | classTypeDecl 
-                             | classHelperDecl 
-                             | interfaceTypeDecl 
-                             | objectDecl 
-                             | recordDecl 
-                             | recordHelperDecl 
+classDecl
+                             : classTypeTypeDecl
+                             | classTypeDecl
+                             | classHelperDecl
+                             | interfaceTypeDecl
+                             | objectDecl
+                             | recordDecl
+                             | recordHelperDecl
                              ;
-classTypeTypeDecl            : CLASS OF typeId 
+classTypeTypeDecl
+                             : CLASS OF typeId
                              ;
-classTypeDecl                : CLASS classState? classParent? classItem* END 
-                             | CLASS classParent? 
+classTypeDecl
+                             : CLASS classState? classParent? classItem* END
+                             | CLASS classParent?
                              ;
-classState                   : 'sealed'
-                             | ABSTRACT
+classState
+                             : 'sealed' | ABSTRACT
                              ;
-classParent                  : LPAREN genericTypeIdent (COMMA genericTypeIdent)* RPAREN    //CHANGEd from typeId to classParentId
+classParent
+                             : LPAREN genericTypeIdent (
+                                                          COMMA genericTypeIdent
+                             )* RPAREN //CHANGEd from typeId to classParentId
                              ;
-classItem                    : visibility
+classItem
+                             : visibility
                              | classMethod
                              | classField
                              | classProperty
@@ -255,38 +343,46 @@ classItem                    : visibility
                              | typeSection
                              | CLASS? varSection
                              ;
-classHelperDecl              : CLASS HELPER classParent? FOR typeId classHelperItem* END //CHANGED, we only need "for" class name
+classHelperDecl
+                             : CLASS HELPER classParent? FOR typeId classHelperItem* END
+                             //CHANGED, we only need "for" class name
                              ;
-classHelperItem              : visibility
+classHelperItem
+                             : visibility
                              | classMethod
                              | classProperty
                              | CLASS? varSection
                              ;
-interfaceTypeDecl            : interfaceKey classParent? interfaceGuid? interfaceItem* END 
-                             | interfaceKey classParent? 
+interfaceTypeDecl
+                             : interfaceKey classParent? interfaceGuid? interfaceItem* END
+                             | interfaceKey classParent?
                              ;
-interfaceKey                 : INTERFACE
-                             | DISPINTERFACE
+interfaceKey
+                             : INTERFACE | DISPINTERFACE
                              ;
-interfaceGuid                : LBRACK QuotedString RBRACK 
+interfaceGuid
+                             : LBRACK QuotedString RBRACK
                              ;
-interfaceItem                : classMethod
-                             | CLASS? classProperty
+interfaceItem
+                             : classMethod | CLASS? classProperty
                              ;
-objectDecl                   : OBJECT classParent? objectItem* END 
+objectDecl
+                             : OBJECT classParent? objectItem* END
                              ;
-objectItem                   : visibility
-                             | classMethod
-                             | classField
+objectItem
+                             : visibility | classMethod | classField
                              ;
-recordDecl                   : simpleRecord
-                             | variantRecord
+recordDecl
+                             : simpleRecord | variantRecord
                              ;
-simpleRecord                 : RECORD recordField* recordItem* END 
+simpleRecord
+                             : RECORD recordField* recordItem* END
                              ;
-variantRecord                : RECORD recordField* recordVariantSection END 
+variantRecord
+                             : RECORD recordField* recordVariantSection END
                              ;
-recordItem                   : visibility     //ADDED
+recordItem
+                             : visibility //ADDED
                              | classMethod
                              | classProperty
                              | constSection
@@ -294,153 +390,251 @@ recordItem                   : visibility     //ADDED
                              | recordField
                              | CLASS? varSection
                              ;
-recordField                  : identList COLON typeDecl hintingDirective* SEMI?  //CHANGED not needed ; at the end
+recordField
+                             : identList COLON typeDecl hintingDirective* SEMI?
+                             //CHANGED not needed ; at the end
                              ;
-recordVariantField           : identList COLON typeDecl hintingDirective* SEMI?
+recordVariantField
+                             : identList COLON typeDecl hintingDirective* SEMI?
                              ;
-recordVariantSection         : CASE (ident COLON)? typeDecl OF (recordVariant | SEMI) (recordVariant | SEMI)*
+recordVariantSection
+                             : CASE (ident COLON)? typeDecl OF (
+                                                          recordVariant
+                                                          | SEMI
+                             ) (recordVariant | SEMI)*
                              ;
-recordVariant                : constExpression (COMMA constExpression)* COLON LPAREN recordVariantField* RPAREN   //CHANGED to recordVariantField from recordField
+recordVariant
+                             : constExpression (
+                                                          COMMA constExpression
+                             )* COLON LPAREN recordVariantField* RPAREN
+                             //CHANGED to recordVariantField from recordField
                              ;
-recordHelperDecl             : RECORD HELPER FOR typeId recordHelperItem* END
+recordHelperDecl
+                             : RECORD HELPER FOR typeId recordHelperItem* END
                              ;
-recordHelperItem             : visibility
-                             | classMethod
-                             | classProperty
+recordHelperItem
+                             : visibility | classMethod | classProperty
                              ;
-classMethod                  : CLASS? methodKey ident genericDefinition? formalParameterSection? SEMI methodDirective* 
-                             | CLASS? FUNCTION ident genericDefinition? formalParameterSection? COLON typeDecl SEMI methodDirective*
-                             | CLASS? OPERATOR ident genericDefinition? formalParameterSection? COLON typeDecl SEMI
-                             ;                             
-classField                   : identList COLON typeDecl SEMI hintingDirective* 
+classMethod
+                             : CLASS? methodKey ident genericDefinition? formalParameterSection?
+                             SEMI methodDirective*
+                             | CLASS? FUNCTION ident genericDefinition? formalParameterSection?
+                             COLON typeDecl SEMI methodDirective*
+                             | CLASS? OPERATOR ident genericDefinition? formalParameterSection?
+                             COLON typeDecl SEMI
                              ;
-classProperty                : CLASS? PROPERTY ident classPropertyArray? (COLON genericTypeIdent)? classPropertyIndex? classPropertySpecifier* SEMI classPropertyEndSpecifier*
-                              // CHANGED added (classPropertySpecifier)* at end for "default;"
-                              // CHANGEDD to genericTypeIdent for "property QueryBuilder : IQueryBuilder<GenericRecord>"
+classField
+                             : identList COLON typeDecl SEMI hintingDirective*
                              ;
-classPropertyArray           : LBRACK formalParameterList RBRACK
+classProperty
+                             : CLASS? PROPERTY ident classPropertyArray? (
+                                                          COLON genericTypeIdent
+                             )? classPropertyIndex? classPropertySpecifier* SEMI
+                             classPropertyEndSpecifier*
+                             // CHANGED added (classPropertySpecifier)* at end for "default;"
+                             // CHANGEDD to genericTypeIdent for "property QueryBuilder : IQueryBuilder<GenericRecord>"
                              ;
-classPropertyIndex           : INDEX expression SEMI?  //CHANGED to (SEMI)?
+classPropertyArray
+                             : LBRACK formalParameterList RBRACK
                              ;
-classPropertySpecifier       : classPropertyReadWrite   //CHANGED removed SEMI
+classPropertyIndex
+                             : INDEX expression SEMI? //CHANGED to (SEMI)?
+                             ;
+classPropertySpecifier
+                             : classPropertyReadWrite //CHANGED removed SEMI
                              | classPropertyDispInterface
                              | STORED expression
                              | DEFAULT expression
-                             | ( DEFAULT                // for array properties only (1 per class)
-                             | 'nodefault' )
+                             | (
+                                                          DEFAULT
+                                                          // for array properties only (1 per class)
+                                                          | 'nodefault'
+                             )
                              | IMPLEMENTS typeId
                              ;
-classPropertyEndSpecifier    : STORED expression SEMI    //ADDED used in classProperty at end
+classPropertyEndSpecifier
+                             : STORED expression SEMI //ADDED used in classProperty at end
                              | DEFAULT expression SEMI
-                             | DEFAULT SEMI             
+                             | DEFAULT SEMI
                              | 'nodefault' SEMI
                              ;
 
-classPropertyReadWrite       : READ qualifiedIdent (LBRACK expression RBRACK)?  // Waarom qualified ident???  //ADDED []
-                             | WRITE qualifiedIdent (LBRACK expression RBRACK)? //ADDED []
+classPropertyReadWrite
+                             : READ qualifiedIdent (
+                                                          LBRACK expression RBRACK
+                             )? // Waarom qualified ident???  //ADDED []
+                             | WRITE qualifiedIdent (
+                                                          LBRACK expression RBRACK
+                             )? //ADDED []
                              ;
-classPropertyDispInterface   : READONLY SEMI
+classPropertyDispInterface
+                             : READONLY SEMI
                              | WRITEONLY SEMI
                              | dispIDDirective
                              ;
-visibility                   : STRICT? PROTECTED 
+visibility
+                             : STRICT? PROTECTED
                              | STRICT? PRIVATE
-                             | ( PUBLIC
-                             | PUBLISHED 
-                             | AUTOMATED )     // win32 deprecated
+                             | (
+                                                          PUBLIC
+                                                          | PUBLISHED
+                                                          | AUTOMATED
+                             ) // win32 deprecated
                              ;
 //****************************
 //section procedure
 //****************************
-exportedProcHeading          : PROCEDURE ident formalParameterSection? COLON typeDecl SEMI functionDirective*
+exportedProcHeading
+                             : PROCEDURE ident formalParameterSection? COLON typeDecl SEMI
+                             functionDirective*
                              | FUNCTION ident formalParameterSection? SEMI functionDirective*
                              ;
-methodDecl                   : methodDeclHeading SEMI methodDirective* methodBody? 
+methodDecl
+                             : methodDeclHeading SEMI methodDirective* methodBody?
                              ;
-methodDeclHeading            : CLASS?  methodKey methodName formalParameterSection?
-                             | CLASS? FUNCTION methodName formalParameterSection? (COLON typeDecl)?
-                             | CLASS OPERATOR methodName formalParameterSection? (COLON typeDecl)?
+methodDeclHeading
+                             : CLASS? methodKey methodName formalParameterSection?
+                             | CLASS? FUNCTION methodName formalParameterSection? (
+                                                          COLON typeDecl
+                             )?
+                             | CLASS OPERATOR methodName formalParameterSection? (
+                                                          COLON typeDecl
+                             )?
                              ;
-methodKey                    : PROCEDURE
-                             | CONSTRUCTOR
-                             | DESTRUCTOR
+methodKey
+                             : PROCEDURE | CONSTRUCTOR | DESTRUCTOR
                              ;
-methodName                   : ident genericDefinition? (DOT ident genericDefinition?)? DOT ident genericDefinition?
-                             ;                             
-procDecl                     : procDeclHeading SEMI functionDirective* procBody?     //CHANGED
+methodName
+                             : ident genericDefinition? (
+                                                          DOT ident genericDefinition?
+                             )? DOT ident genericDefinition?
                              ;
-procDeclHeading              : PROCEDURE ident formalParameterSection?             //CHANGED
+procDecl
+                             : procDeclHeading SEMI functionDirective* procBody? //CHANGED
+                             ;
+procDeclHeading
+                             : PROCEDURE ident formalParameterSection? //CHANGED
                              | FUNCTION ident formalParameterSection? COLON typeDecl
                              ;
-formalParameterSection       : LPAREN formalParameterList? RPAREN 
+formalParameterSection
+                             : LPAREN formalParameterList? RPAREN
                              ;
-formalParameterList          : formalParameter (SEMI formalParameter)* 
+formalParameterList
+                             : formalParameter (SEMI formalParameter)*
                              ;
-formalParameter              : parmType? identListFlat (COLON typeDecl)? (EQUAL expression)? 
-               //expressions was cut out, beacause we dont have to know default variable values; they were causing troubles with DelphiCodeAnalyser
+formalParameter
+                             : parmType? identListFlat (
+                                                          COLON typeDecl
+                             )? (EQUAL expression)?
+                             //expressions was cut out, beacause we dont have to know default variable values; they were causing troubles with DelphiCodeAnalyser
                              ;
-parmType                     : CONST
-                             | VAR
-                             | OUT
+parmType
+                             : CONST | VAR | OUT
                              ;
-methodBody                   : block SEMI 
+methodBody
+                             : block SEMI
                              ;
-procBody                     : FORWARD SEMI functionDirective*   // CHECKEN ; en directive plaats!
-                             | EXTERNAL (NAME expression | INDEX expression)* functionDirective* // CHECKEN directive plaats
+procBody
+                             : FORWARD SEMI functionDirective* // CHECKEN ; en directive plaats!
+                             | EXTERNAL (
+                                                          NAME expression
+                                                          | INDEX expression
+                             )* functionDirective* // CHECKEN directive plaats
                              | block SEMI
                              ;
 
 //****************************
 //section expression
 //****************************
-expression                   : anonymousExpression 
-                             | simpleExpression (relOp simpleExpression)? (EQUAL expression)?   //CHANGED, added expression for: "if( functionCall(x, 7+66) = true ) then" syntax
-                             ;                           
-anonymousExpression          : PROCEDURE formalParameterSection? block
+expression
+                             : anonymousExpression
+                             | simpleExpression (
+                                                          relOp simpleExpression
+                             )? (EQUAL expression)?
+                             //CHANGED, added expression for: "if( functionCall(x, 7+66) = true ) then" syntax
+                             ;
+anonymousExpression
+                             : PROCEDURE formalParameterSection? block
                              | FUNCTION formalParameterSection? COLON typeDecl block
                              ;
-simpleExpression             : factor (operator factor)*
+simpleExpression
+                             : factor (operator factor)*
                              ;
-factor                       : AT2 factor
-                             | DOUBLEAT factor       // used to get address of proc var
+factor
+                             : AT2 factor
+                             | DOUBLEAT factor // used to get address of proc var
                              | NOT factor
                              | PLUS factor
                              | MINUS factor
-                             | POINTER2 ident           // geeft volgnummer van letter
+                             | POINTER2 ident // geeft volgnummer van letter
                              | intNum
                              | realNum
-                             | ( TkAsmHexNum          // Alleen in asm statement
-                             | TRUE
-                             | FALSE
-                             | NIL )
-                             | LPAREN expression RPAREN POINTER2? (DOT expression)?        //CHANGED, added  ('^')? (DOT qualifiedIdent)?
+                             | (
+                                                          TkAsmHexNum // Alleen in asm statement
+                                                          | TRUE
+                                                          | FALSE
+                                                          | NIL
+                             )
+                             | LPAREN expression RPAREN POINTER2? (
+                                                          DOT expression
+                             )?
+                             //CHANGED, added  ('^')? (DOT qualifiedIdent)?
                              | stringFactor
                              | setSection
                              | designator
                              | typeId LPAREN expression RPAREN
                              ;
-stringFactor                 : ControlString (QuotedString ControlString)* QuotedString?
-                             | QuotedString (ControlString QuotedString)* ControlString?
+stringFactor
+                             : ControlString (
+                                                          QuotedString ControlString
+                             )* QuotedString?
+                             | QuotedString (
+                                                          ControlString QuotedString
+                             )* ControlString?
                              ;
-setSection                   : LBRACK (expression ((COMMA | '..') expression)*)? RBRACK
+setSection
+                             : LBRACK (
+                                                          expression (
+                                                                                       (
+                                                                                                                    COMMA
+                                                                                                                    |
+                                                                                                                    '..'
+                                                                                       ) expression
+                                                          )*
+                             )? RBRACK
                              ;
 
-designator                   : INHERITED // ('inherited')? ( (namespacedQualifiedIdent | typeId) )? (designatorItem)*
+designator
+                             : INHERITED
+                             // ('inherited')? ( (namespacedQualifiedIdent | typeId) )? (designatorItem)*
                              | typeId
                              | designatorItem+
                              ;
-designatorItem               : POINTER2
-                             | (DOT | AT2) ident              //CHANGED added '@'
-                             | LT genericTypeIdent (COMMA genericTypeIdent)* GT       //ADDED for proc<sth, sth>.foo
+designatorItem
+                             : POINTER2
+                             | (DOT | AT2) ident //CHANGED added '@'
+                             | LT genericTypeIdent (
+                                                          COMMA genericTypeIdent
+                             )* GT //ADDED for proc<sth, sth>.foo
                              | LBRACK expressionList RBRACK
-                             | LPAREN (expression colonConstruct? (COMMA expression colonConstruct?)*)? RPAREN 
+                             | LPAREN (
+                                                          expression colonConstruct? (
+                                                                                       COMMA
+                                                                                       expression
+                                                                                       colonConstruct
+                                                                                       ?
+                                                          )*
+                             )? RPAREN
                              ;
-expressionList               : expression (COMMA expression)*
+expressionList
+                             : expression (COMMA expression)*
                              ;
-colonConstruct               : COLON expression (COLON expression)?
+colonConstruct
+                             : COLON expression (COLON expression)?
                              ;
 // Alleen voor Write/WriteLn.
-operator                     : PLUS
+operator
+                             : PLUS
                              | MINUS
                              | OR
                              | XOR
@@ -453,20 +647,15 @@ operator                     : PLUS
                              | SHR
                              | AS
                              ;
-relOp                        : LT
-                             | GT
-                             | LE
-                             | GE
-                             | NOT_EQUAL
-                             | EQUAL
-                             | IN
-                             | IS
+relOp
+                             : LT | GT | LE | GE | NOT_EQUAL | EQUAL | IN | IS
                              ;
 //****************************
 //section statement
 //****************************
 
-statement                    : ifStatement
+statement
+                             : ifStatement
                              | caseStatement
                              | repeatStatement
                              | whileStatement
@@ -479,424 +668,878 @@ statement                    : ifStatement
                              | label COLON statement
                              | simpleStatement
                              ;
-ifStatement                  : IF expression THEN statement (ELSE statement)?
+ifStatement
+                             : IF expression THEN statement (ELSE statement)?
                              ;
-caseStatement                : CASE expression OF caseItem* (ELSE statementList SEMI?)? END
+caseStatement
+                             : CASE expression OF caseItem* (
+                                                          ELSE statementList SEMI?
+                             )? END
                              ;
-caseItem                     : caseLabel (COMMA caseLabel)* COLON statement SEMI? // checken of ; sep of scheider is
+caseItem
+                             : caseLabel (COMMA caseLabel)* COLON statement SEMI?
+                             // checken of ; sep of scheider is
                              ;
-caseLabel                    : expression ('..' expression)?
+caseLabel
+                             : expression ('..' expression)?
                              ;
-repeatStatement              : REPEAT statementList? UNTIL expression
+repeatStatement
+                             : REPEAT statementList? UNTIL expression
                              ;
-whileStatement               : WHILE expression DO statement
+whileStatement
+                             : WHILE expression DO statement
                              ;
-forStatement                 : FOR designator ASSIGN expression TO expression DO statement
+forStatement
+                             : FOR designator ASSIGN expression TO expression DO statement
                              | FOR designator ASSIGN expression DOWNTO expression DO statement
                              | FOR designator IN expression DO statement
                              ;
-withStatement                : WITH withItem DO statement
+withStatement
+                             : WITH withItem DO statement
                              ;
-withItem                     : designator AS designator       //ADDED
+withItem
+                             : designator AS designator //ADDED
                              | designator (COMMA designator)*
                              ;
-compoundStatement            : BEGIN statementList? END 
+compoundStatement
+                             : BEGIN statementList? END
                              ;
-statementList                : statement (SEMI statement?)*
+statementList
+                             : statement (SEMI statement?)*
                              ;
-simpleStatement              : designator ASSIGN expression
+simpleStatement
+                             : designator ASSIGN expression
                              | designator // call
                              | gotoStatement
                              ;
-gotoStatement                : GOTO label
-                             | EXIT (LPAREN expression RPAREN)?   
-                             | ( BREAK                          
-                             | CONTINUE )
+gotoStatement
+                             : GOTO label
+                             | EXIT (LPAREN expression RPAREN)?
+                             | ( BREAK | CONTINUE)
                              ;
 //****************************
 //section constExpression
 //****************************
-constExpression              : LPAREN recordConstExpression (SEMI recordConstExpression)* RPAREN //CHANGED reversed order
-                             | LPAREN constExpression (COMMA constExpression)* RPAREN
+constExpression
+                             : LPAREN recordConstExpression (
+                                                          SEMI recordConstExpression
+                             )* RPAREN //CHANGED reversed order
+                             | LPAREN constExpression (
+                                                          COMMA constExpression
+                             )* RPAREN
                              | expression
                              ;
-recordConstExpression        : ident COLON constExpression
+recordConstExpression
+                             : ident COLON constExpression
                              ;
 //****************************
 //section exceptionStatement
 //****************************
-tryStatement                 : TRY statementList? EXCEPT handlerList END
+tryStatement
+                             : TRY statementList? EXCEPT handlerList END
                              | TRY statementList? FINALLY statementList? END
                              ;
-handlerList                  : handler* (ELSE statementList)?
-                             | statementList
+handlerList
+                             : handler* (ELSE statementList)? | statementList
                              ;
-handler                      : ON handlerIdent? typeId DO handlerStatement  //CHANGED - ; is not required ; handlerIdent not required, example:  "on einvalidoperation do;"
+handler
+                             : ON handlerIdent? typeId DO handlerStatement
+                             //CHANGED - ; is not required ; handlerIdent not required, example:  "on einvalidoperation do;"
                              ;
-handlerIdent                 : ident COLON
+handlerIdent
+                             : ident COLON
                              ;
-handlerStatement             : statement SEMI?
-                             | SEMI
+handlerStatement
+                             : statement SEMI? | SEMI
                              ;
-raiseStatement               : RAISE designator? (AT designator)? // CHECKEN!
-                             ;           
+raiseStatement
+                             : RAISE designator? (AT designator)? // CHECKEN!
+                             ;
 //****************************
 //section AssemblerStatement
 //****************************
-assemblerStatement           : ASM ~(END)* END    //ADDED we don't realy care about assembler statements, since they don't contribute to
-                             ;                //any measure, just skip, allow all
+assemblerStatement
+                             : ASM ~(END)* END
+                             //ADDED we don't realy care about assembler statements, since they don't contribute to
+                             ; //any measure, just skip, allow all
 //****************************
 //section directive
 //****************************
-methodDirective              : reintroduceDirective         // 1
-                             | overloadDirective            // 2
-                             | bindingDirective             // 3
-                             | abstractDirective            // 3 virtual;
-                             | inlineDirective              // 4 niet virtual or dynamic
-                             | callConvention               // 4
-                             | hintingDirective SEMI       // 4 (niet abstract)
-                             | oldCallConventionDirective   // 1
+methodDirective
+                             : reintroduceDirective // 1
+                             | overloadDirective // 2
+                             | bindingDirective // 3
+                             | abstractDirective // 3 virtual;
+                             | inlineDirective // 4 niet virtual or dynamic
+                             | callConvention // 4
+                             | hintingDirective SEMI // 4 (niet abstract)
+                             | oldCallConventionDirective // 1
                              | dispIDDirective
                              ;
-functionDirective            : overloadDirective          // 1
-                             | inlineDirective            // 1
-                             | callConvention             // 1
+functionDirective
+                             : overloadDirective // 1
+                             | inlineDirective // 1
+                             | callConvention // 1
                              | oldCallConventionDirective // 1
-                             | hintingDirective SEMI      // 1
-                             | callConventionNoSemi? externalDirective          // 1
-                             | UNSAFE SEMI              // 1 .net?
+                             | hintingDirective SEMI // 1
+                             | callConventionNoSemi? externalDirective // 1
+                             | UNSAFE SEMI // 1 .net?
                              ;
-reintroduceDirective         : REINTRODUCE SEMI
+reintroduceDirective
+                             : REINTRODUCE SEMI
                              ;
-overloadDirective            : OVERLOAD SEMI?    //CHANGE ; not needed
+overloadDirective
+                             : OVERLOAD SEMI? //CHANGE ; not needed
                              ;
-bindingDirective             : MESSAGE expression SEMI
+bindingDirective
+                             : MESSAGE expression SEMI
                              | STATIC SEMI
                              | DYNAMIC SEMI
                              | OVERRIDE SEMI
                              | VIRTUAL SEMI
                              ;
-abstractDirective            : ABSTRACT SEMI
-                             | FINAL SEMI
+abstractDirective
+                             : ABSTRACT SEMI | FINAL SEMI
                              ;
-inlineDirective              : INLINE SEMI
+inlineDirective
+                             : INLINE SEMI
                              | ASSEMBLER SEMI // deprecated
                              ;
-callConvention               : CDECL SEMI    //
-                             | PASCAL SEMI   //
+callConvention
+                             : CDECL SEMI //
+                             | PASCAL SEMI //
                              | REGISTER SEMI //
                              | SAFECALL SEMI //
-                             | STDCALL SEMI  //
-                             | EXPORT SEMI   // deprecated
+                             | STDCALL SEMI //
+                             | EXPORT SEMI // deprecated
                              ;
-callConventionNoSemi         : CDECL    //    //ADDED for procedureType error fixing, without SEMI at the end
-                             | PASCAL   //
+callConventionNoSemi
+                             : CDECL
+                             //    //ADDED for procedureType error fixing, without SEMI at the end
+                             | PASCAL //
                              | REGISTER //
                              | SAFECALL //
-                             | STDCALL  //
-                             | EXPORT   // deprecated
+                             | STDCALL //
+                             | EXPORT // deprecated
                              ;
-oldCallConventionDirective   : FAR SEMI      // deprecated
-                             | LOCAL SEMI    // niet in windows maakt functie niet exporteerbaar
-                             | NEAR SEMI     // deprecated
+oldCallConventionDirective
+                             : FAR SEMI // deprecated
+                             | LOCAL SEMI // niet in windows maakt functie niet exporteerbaar
+                             | NEAR SEMI // deprecated
                              ;
-hintingDirective             : DEPRECATED stringFactor?
-                             | ( EXPERIMENTAL  // added 2006
-                             | PLATFORM
-                             | LIBRARY )
+hintingDirective
+                             : DEPRECATED stringFactor?
+                             | (
+                                                          EXPERIMENTAL // added 2006
+                                                          | PLATFORM
+                                                          | LIBRARY
+                             )
                              ;
-externalDirective            : VARARGS SEMI   // alleen bij external cdecl
+externalDirective
+                             : VARARGS SEMI // alleen bij external cdecl
                              | EXTERNAL SEMI
-                             | EXTERNAL constExpression externalSpecifier* SEMI // expression : dll name
+                             | EXTERNAL constExpression externalSpecifier* SEMI
+                             // expression : dll name
                              ;
-externalSpecifier            : NAME constExpression
-                             | INDEX constExpression   // specific to a platform
+externalSpecifier
+                             : NAME constExpression
+                             | INDEX constExpression // specific to a platform
                              ;
-dispIDDirective              : DISPID expression SEMI
+dispIDDirective
+                             : DISPID expression SEMI
                              ;
 //****************************
 ////section general
 //****************************
-ident                        : TkIdentifier
-                             | AMBER TkIdentifier
+ident
+                             : TkIdentifier | AMBER TkIdentifier | usedKeywordsAsNames
+                             ;
+usedKeywordsAsNames
+                             : (
+                                                          NAME
+                                                          | READONLY
+                                                          | ADD
+                                                          | AT
+                                                          | MESSAGE
+                                                          | POINTER
+                                                          | INDEX
+                                                          | DEFAULT
+                                                          | STRING
+                                                          | CONTINUE
+                             )
+                             | (
+                                                          READ
+                                                          | WRITE
+                                                          | REGISTER
+                                                          | VARIANT
+                                                          | OPERATOR
+                                                          | REMOVE
+                                                          | LOCAL
+                                                          | REFERENCE
+                                                          | CONTAINS
+                                                          | FINAL
+                             )
+                             | (
+                                                          BREAK
+                                                          | EXIT
+                                                          | STRICT
+                                                          | OUT
+                                                          | OBJECT
+                                                          | EXPORT
+                                                          | ANSISTRING
+                                                          | IMPLEMENTS
+                                                          | STORED
+                             )
+                             ;
+identList
+                             : ident (COMMA ident)*
+                             ;
+identListFlat
+                             : ident (COMMA ident)* //ADDED used in formalParemeter
+                             ;
+label
+                             : (
+                                                          TkIdentifier
+                                                          | TkIntNum
+                                                          | TkHexNum
+                             )
                              | usedKeywordsAsNames
                              ;
-usedKeywordsAsNames          : (NAME | READONLY | ADD | AT | MESSAGE | POINTER | INDEX | DEFAULT | STRING | CONTINUE)
-                             | (READ | WRITE | REGISTER | VARIANT | OPERATOR | REMOVE | LOCAL | REFERENCE | CONTAINS | FINAL)
-                             | (BREAK | EXIT | STRICT | OUT | OBJECT | EXPORT | ANSISTRING | IMPLEMENTS | STORED)
-                             ;                           
-identList                    : ident (COMMA ident)* 
+intNum
+                             : TkIntNum | TkHexNum
                              ;
-identListFlat                : ident (COMMA ident)*    //ADDED used in formalParemeter
-                             ;                                                          
-label                        : ( TkIdentifier | TkIntNum | TkHexNum ) | usedKeywordsAsNames 
+realNum
+                             : TkRealNum
                              ;
-intNum                       : TkIntNum
-                             | TkHexNum
-                             ;                             
-realNum                      : TkRealNum
-                             ;                             
-namespacedQualifiedIdent     : (namespaceName DOT)? qualifiedIdent
+namespacedQualifiedIdent
+                             : (namespaceName DOT)? qualifiedIdent
                              ;
-namespaceName                : ident (DOT ident)*
+namespaceName
+                             : ident (DOT ident)*
                              ;
-qualifiedIdent               :  (ident DOT)*  ident   //must stay the way it is, with DOT for proper class method identyfication
+qualifiedIdent
+                             : (ident DOT)* ident
+                             //must stay the way it is, with DOT for proper class method identyfication
                              ;
-                                   
+
 // KEYWORDS
-ABSOLUTE          : 'absolute'       ;
-ABSTRACT          : 'abstract'       ;
-ADD               : 'add'            ;
-AND               : 'and'            ;
-ANSISTRING        : 'ansistring'     ;
-ARRAY             : 'array'          ;
-AS                : 'as'             ;
-ASM               : 'asm'            ;
-ASSEMBLER         : 'assembler'      ;
-ASSEMBLY          : 'assembly'       ;
-AT                : 'at'             ;
-AUTOMATED         : 'automated'      ;
-BEGIN             : 'begin'          ;
-BREAK             : 'break'          ;
-CASE              : 'case'           ;
-CDECL             : 'cdecl'          ;
-CLASS             : 'class'          ;
-CONST             : 'const'          ;
-CONSTRUCTOR       : 'constructor'    ;
-CONTAINS          : 'contains'       ;
-CONTINUE          : 'continue'       ;
-DEFAULT           : 'default'        ;
-DEPRECATED        : 'deprecated'     ;
-DESTRUCTOR        : 'destructor'     ;
-DISPID            : 'dispid'         ;
-DISPINTERFACE     : 'dispinterface'  ;
-DIV               : 'div'            ;
-DO                : 'do'             ;
-DOWNTO            : 'downto'         ;
-DQ                : 'dq'             ;
-DW                : 'dw'             ;
-DYNAMIC           : 'dynamic'        ;
-ELSE              : 'else'           ;
-END               : 'end'            ;
-EXCEPT            : 'except'         ;
-EXIT              : 'exit'           ;
-EXPERIMENTAL      : 'experimental'   ;
-EXPORT            : 'export'         ;
-EXPORTS           : 'exports'        ;
-EXTERNAL          : 'external'       ;
-FAR               : 'far'            ;
-FILE              : 'file'           ;
-FINAL             : 'final'          ;
-FINALIZATION      : 'finalization'   ;
-FINALLY           : 'finally'        ;
-FOR               : 'for'            ;
-FORWARD           : 'forward'        ;
-FUNCTION          : 'function'       ;
-GOTO              : 'goto'           ;
-HELPER            : 'helper'         ;
-IF                : 'if'             ;
-IMPLEMENTATION    : 'implementation' ;
-IMPLEMENTS        : 'implements'     ;
-IN                : 'in'             ;
-INDEX             : 'index'          ;
-INHERITED         : 'inherited'      ;
-INITIALIZATION    : 'initialization' ;
-INLINE            : 'inline'         ;
-INTERFACE         : 'interface'      ;
-IS                : 'is'             ;
-LABEL             : 'label'          ;
-LIBRARY           : 'library'        ;
-LOCAL             : 'local'          ;
-MESSAGE           : 'message'        ;
-MOD               : 'mod'            ;
-NAME              : 'name'           ;
-NEAR              : 'near'           ;
-NIL               : 'nil'            ;
-NODEFAULT         : 'nodefault'      ;
-NOT               : 'not'            ;
-OBJECT            : 'object'         ;
-OF                : 'of'             ;
-ON                : 'on'             ;
-OPERATOR          : 'operator'       ;
-OR                : 'or'             ;
-OUT               : 'out'            ;
-OVERLOAD          : 'overload'       ;
-OVERRIDE          : 'override'       ;
-PACKAGE           : 'package'        ;
-PACKED            : 'packed'         ;
-PASCAL            : 'pascal'         ;
-PLATFORM          : 'platform'       ;
-POINTER           : 'pointer'        ;
-PRIVATE           : 'private'        ;
-PROCEDURE         : 'procedure'      ;
-PROGRAM           : 'program'        ;
-PROPERTY          : 'property'       ;
-PROTECTED         : 'protected'      ;
-PUBLIC            : 'public'         ;
-PUBLISHED         : 'published'      ;
-RAISE             : 'raise'          ;
-READ              : 'read'           ;
-READONLY          : 'readonly'       ;
-RECORD            : 'record'         ;
-REFERENCE         : 'reference'      ;
-REGISTER          : 'register'       ;
-REINTRODUCE       : 'reintroduce'    ;
-REMOVE            : 'remove'         ;
-REPEAT            : 'repeat'         ;
-REQUIRES          : 'requires'       ;
-RESIDENT          : 'resident'       ;
-RESOURCESTRING    : 'resourcestring' ;
-SAFECALL          : 'safecall'       ;
-SEALED            : 'sealed'         ;
-SET               : 'set'            ;
-SHL               : 'shl'            ;
-SHR               : 'shr'            ;
-STATIC            : 'static'         ;
-STDCALL           : 'stdcall'        ;
-STORED            : 'stored'         ;
-STRICT            : 'strict'         ;
-STRING            : 'string'         ;
-THEN              : 'then'           ;
-THREADVAR         : 'threadvar'      ;
-TO                : 'to'             ;
-TRY               : 'try'            ;
-TYPE              : 'type'           ;
-UNIT              : 'unit'           ;
-UNSAFE            : 'unsafe'         ;
-UNTIL             : 'until'          ;
-USES              : 'uses'           ;
-VAR               : 'var'            ;
-VARARGS           : 'varargs'        ;
-VARIANT           : 'variant'        ;
-VIRTUAL           : 'virtual'        ;
-WHILE             : 'while'          ;
-WITH              : 'with'           ;
-WRITE             : 'write'          ;
-WRITEONLY         : 'writeonly'      ;
-XOR               : 'xor'            ;
-FALSE             : 'false'          ;
-TRUE              : 'true'           ;
+ABSOLUTE
+                             : 'absolute'
+                             ;
+ABSTRACT
+                             : 'abstract'
+                             ;
+ADD
+                             : 'add'
+                             ;
+AND
+                             : 'and'
+                             ;
+ANSISTRING
+                             : 'ansistring'
+                             ;
+ARRAY
+                             : 'array'
+                             ;
+AS
+                             : 'as'
+                             ;
+ASM
+                             : 'asm'
+                             ;
+ASSEMBLER
+                             : 'assembler'
+                             ;
+ASSEMBLY
+                             : 'assembly'
+                             ;
+AT
+                             : 'at'
+                             ;
+AUTOMATED
+                             : 'automated'
+                             ;
+BEGIN
+                             : 'begin'
+                             ;
+BREAK
+                             : 'break'
+                             ;
+CASE
+                             : 'case'
+                             ;
+CDECL
+                             : 'cdecl'
+                             ;
+CLASS
+                             : 'class'
+                             ;
+CONST
+                             : 'const'
+                             ;
+CONSTRUCTOR
+                             : 'constructor'
+                             ;
+CONTAINS
+                             : 'contains'
+                             ;
+CONTINUE
+                             : 'continue'
+                             ;
+DEFAULT
+                             : 'default'
+                             ;
+DEPRECATED
+                             : 'deprecated'
+                             ;
+DESTRUCTOR
+                             : 'destructor'
+                             ;
+DISPID
+                             : 'dispid'
+                             ;
+DISPINTERFACE
+                             : 'dispinterface'
+                             ;
+DIV
+                             : 'div'
+                             ;
+DO
+                             : 'do'
+                             ;
+DOWNTO
+                             : 'downto'
+                             ;
+DQ
+                             : 'dq'
+                             ;
+DW
+                             : 'dw'
+                             ;
+DYNAMIC
+                             : 'dynamic'
+                             ;
+ELSE
+                             : 'else'
+                             ;
+END
+                             : 'end'
+                             ;
+EXCEPT
+                             : 'except'
+                             ;
+EXIT
+                             : 'exit'
+                             ;
+EXPERIMENTAL
+                             : 'experimental'
+                             ;
+EXPORT
+                             : 'export'
+                             ;
+EXPORTS
+                             : 'exports'
+                             ;
+EXTERNAL
+                             : 'external'
+                             ;
+FAR
+                             : 'far'
+                             ;
+FILE
+                             : 'file'
+                             ;
+FINAL
+                             : 'final'
+                             ;
+FINALIZATION
+                             : 'finalization'
+                             ;
+FINALLY
+                             : 'finally'
+                             ;
+FOR
+                             : 'for'
+                             ;
+FORWARD
+                             : 'forward'
+                             ;
+FUNCTION
+                             : 'function'
+                             ;
+GOTO
+                             : 'goto'
+                             ;
+HELPER
+                             : 'helper'
+                             ;
+IF
+                             : 'if'
+                             ;
+IMPLEMENTATION
+                             : 'implementation'
+                             ;
+IMPLEMENTS
+                             : 'implements'
+                             ;
+IN
+                             : 'in'
+                             ;
+INDEX
+                             : 'index'
+                             ;
+INHERITED
+                             : 'inherited'
+                             ;
+INITIALIZATION
+                             : 'initialization'
+                             ;
+INLINE
+                             : 'inline'
+                             ;
+INTERFACE
+                             : 'interface'
+                             ;
+IS
+                             : 'is'
+                             ;
+LABEL
+                             : 'label'
+                             ;
+LIBRARY
+                             : 'library'
+                             ;
+LOCAL
+                             : 'local'
+                             ;
+MESSAGE
+                             : 'message'
+                             ;
+MOD
+                             : 'mod'
+                             ;
+NAME
+                             : 'name'
+                             ;
+NEAR
+                             : 'near'
+                             ;
+NIL
+                             : 'nil'
+                             ;
+NODEFAULT
+                             : 'nodefault'
+                             ;
+NOT
+                             : 'not'
+                             ;
+OBJECT
+                             : 'object'
+                             ;
+OF
+                             : 'of'
+                             ;
+ON
+                             : 'on'
+                             ;
+OPERATOR
+                             : 'operator'
+                             ;
+OR
+                             : 'or'
+                             ;
+OUT
+                             : 'out'
+                             ;
+OVERLOAD
+                             : 'overload'
+                             ;
+OVERRIDE
+                             : 'override'
+                             ;
+PACKAGE
+                             : 'package'
+                             ;
+PACKED
+                             : 'packed'
+                             ;
+PASCAL
+                             : 'pascal'
+                             ;
+PLATFORM
+                             : 'platform'
+                             ;
+POINTER
+                             : 'pointer'
+                             ;
+PRIVATE
+                             : 'private'
+                             ;
+PROCEDURE
+                             : 'procedure'
+                             ;
+PROGRAM
+                             : 'program'
+                             ;
+PROPERTY
+                             : 'property'
+                             ;
+PROTECTED
+                             : 'protected'
+                             ;
+PUBLIC
+                             : 'public'
+                             ;
+PUBLISHED
+                             : 'published'
+                             ;
+RAISE
+                             : 'raise'
+                             ;
+READ
+                             : 'read'
+                             ;
+READONLY
+                             : 'readonly'
+                             ;
+RECORD
+                             : 'record'
+                             ;
+REFERENCE
+                             : 'reference'
+                             ;
+REGISTER
+                             : 'register'
+                             ;
+REINTRODUCE
+                             : 'reintroduce'
+                             ;
+REMOVE
+                             : 'remove'
+                             ;
+REPEAT
+                             : 'repeat'
+                             ;
+REQUIRES
+                             : 'requires'
+                             ;
+RESIDENT
+                             : 'resident'
+                             ;
+RESOURCESTRING
+                             : 'resourcestring'
+                             ;
+SAFECALL
+                             : 'safecall'
+                             ;
+SEALED
+                             : 'sealed'
+                             ;
+SET
+                             : 'set'
+                             ;
+SHL
+                             : 'shl'
+                             ;
+SHR
+                             : 'shr'
+                             ;
+STATIC
+                             : 'static'
+                             ;
+STDCALL
+                             : 'stdcall'
+                             ;
+STORED
+                             : 'stored'
+                             ;
+STRICT
+                             : 'strict'
+                             ;
+STRING
+                             : 'string'
+                             ;
+THEN
+                             : 'then'
+                             ;
+THREADVAR
+                             : 'threadvar'
+                             ;
+TO
+                             : 'to'
+                             ;
+TRY
+                             : 'try'
+                             ;
+TYPE
+                             : 'type'
+                             ;
+UNIT
+                             : 'unit'
+                             ;
+UNSAFE
+                             : 'unsafe'
+                             ;
+UNTIL
+                             : 'until'
+                             ;
+USES
+                             : 'uses'
+                             ;
+VAR
+                             : 'var'
+                             ;
+VARARGS
+                             : 'varargs'
+                             ;
+VARIANT
+                             : 'variant'
+                             ;
+VIRTUAL
+                             : 'virtual'
+                             ;
+WHILE
+                             : 'while'
+                             ;
+WITH
+                             : 'with'
+                             ;
+WRITE
+                             : 'write'
+                             ;
+WRITEONLY
+                             : 'writeonly'
+                             ;
+XOR
+                             : 'xor'
+                             ;
+FALSE
+                             : 'false'
+                             ;
+TRUE
+                             : 'true'
+                             ;
 
 //----------------------------------------------------------------------------
 // OPERATORS
 //----------------------------------------------------------------------------
-PLUS              : '+'   ;
-MINUS             : '-'   ;
-STAR              : '*'   ;
-SLASH             : '/'   ;
-ASSIGN            : ':='  ;
-COMMA             : ','   ;
-SEMI              : ';'   ;
-COLON             : ':'   ;
-EQUAL             : '='   ;
-NOT_EQUAL         : '<>'  ;
-LT                : '<'   ;
-LE                : '<='  ;
-GE                : '>='  ;
-GT                : '>'   ;
-LPAREN            : '('   ;
-RPAREN            : ')'   ;
-LBRACK            : '['   ; // line_tab[line]
-LBRACK2           : '(.'  ; // line_tab(.line.)
-RBRACK            : ']'   ;
-RBRACK2           : '.)'  ;
-POINTER2          : '^'   ;
-AT2               : '@'   ;
-DOT               : '.'   ;// ('.' {$setType(DOTDOT);})?  ;
-DOTDOT            : '..'  ;
-LCURLY            : '{'   ;
-RCURLY            : '}'   ;     
+PLUS
+                             : '+'
+                             ;
+MINUS
+                             : '-'
+                             ;
+STAR
+                             : '*'
+                             ;
+SLASH
+                             : '/'
+                             ;
+ASSIGN
+                             : ':='
+                             ;
+COMMA
+                             : ','
+                             ;
+SEMI
+                             : ';'
+                             ;
+COLON
+                             : ':'
+                             ;
+EQUAL
+                             : '='
+                             ;
+NOT_EQUAL
+                             : '<>'
+                             ;
+LT
+                             : '<'
+                             ;
+LE
+                             : '<='
+                             ;
+GE
+                             : '>='
+                             ;
+GT
+                             : '>'
+                             ;
+LPAREN
+                             : '('
+                             ;
+RPAREN
+                             : ')'
+                             ;
+LBRACK
+                             : '['
+                             ; // line_tab[line]
+LBRACK2
+                             : '(.'
+                             ; // line_tab(.line.)
+RBRACK
+                             : ']'
+                             ;
+RBRACK2
+                             : '.)'
+                             ;
+POINTER2
+                             : '^'
+                             ;
+AT2
+                             : '@'
+                             ;
+DOT
+                             : '.'
+                             ; // ('.' {$setType(DOTDOT);})?  ;
+DOTDOT
+                             : '..'
+                             ;
+LCURLY
+                             : '{'
+                             ;
+RCURLY
+                             : '}'
+                             ;
 
-AMBER             : '&'   ;
-DOUBLEAT          : '@@'  ;
+AMBER
+                             : '&'
+                             ;
+DOUBLEAT
+                             : '@@'
+                             ;
 
 //****************************
 //section token
 //****************************
-TkGlobalFunction        : 'FUNCTION_GLOBAL'
-                        ;
-TkFunctionName          : 'FUNCTION_NAME'
-                        ;
-TkFunctionArgs          : 'FUNCTION_ARGS'
-                        ;
-TkFunctionBody          : 'FUNCTION_BODY'
-                        ;
-TkFunctionReturn        : 'FUNCTION_RETURN'
-                        ;
-TkCustomAttribute       : 'CUSTOM_ATTRIBUTE'
-                        ;
-TkCustomAttributeArgs   : 'CUSTOM_ATTRIBUTE_ARGS'
-                        ;
-TkNewType               : 'NEW_TYPE'
-                        ;
-TkClass                 : 'CLASS'
-                        ;
-TkRecord                : 'RECORD_TYPE'
-                        ;
-TkRecordHelper          : 'RECORD_HELPER'
-                        ;
-TkInterface             : 'INTERFACE_TYPE'
-                        ;
-TkObject                : 'OBJECT_TYPE'
-                        ;
-TkClassOfType           : 'CLASS_OF_TYPE'
-                        ;
-TkVariableType          : 'VARIABLE_TYPE'
-                        ;
-TkVariableIdents        : 'VARIABLE_IDENTS'
-                        ;
-TkVariableParam         : 'VARIABLE_PARAM'
-                        ;
-TkGuid                  : 'INTERFACE_GUID'
-                        ;
-TkClassParents          : 'CLASS_PARENTS'
-                        ;
-TkClassField            : 'CLASS_FIELD'
-                        ;
-TkAnonymousExpression   : 'ANONYMOUS_EXPRESSION'
-                        ;
-TkIdentifier            : (Alpha | '_') (Alpha | Digit | '_')*
-                        ;  
-TkIntNum                : Digitseq
-                        ;
-TkRealNum               : Digitseq (DOT Digitseq)? ('e' (PLUS|MINUS)? Digitseq)?  //CHANGED
-                        ;
-TkHexNum                : '$' Hexdigitseq
-                        ;
-TkAsmHexNum             : Hexdigitseq ('h')
-                        ;
-TkAsmHexLabel           : Hexdigitseq COLON
-                        ;
-QuotedString            : '\'' ('\'\'' | ~('\''))* '\''   //taken from PASCAL grammar
-                        ;
-ControlString           : Controlchar Controlchar*
-                        ;
-                        
-fragment                
-Controlchar             : '#' Digitseq
-                        | '#' '$' Hexdigitseq
-                        ;
-fragment                
-Alpha                   : 'a'..'z'
-                        | 'A'..'Z'
-                        | '\u0080'..'\uFFFE' ~('\uFEFF') //ADDED unicode support
-                        ;
-fragment                
-Digit                   : '0'..'9'
-                        ;
-fragment                
-Digitseq                : Digit Digit*
-                        ;
-fragment                
-Hexdigit                : Digit | 'a'..'f' | 'A'..'F'
-                        ;
-Hexdigitseq             : Hexdigit Hexdigit*
-                        ;
-COMMENT                 :  ( '//' ~('\n'|'\r')* '\r'? '\n'           
-                        |  '(*' .*? '*)'  
-                        |  '{' .*? '}')    -> skip
-                        ;                 
-WS                      : (' '|'\t'|'\r'|'\n'|'\f')+ -> skip
-                        ;
-UnicodeBOM              : '\uFEFF' -> skip 
-                        ;                             
+TkGlobalFunction
+                             : 'FUNCTION_GLOBAL'
+                             ;
+TkFunctionName
+                             : 'FUNCTION_NAME'
+                             ;
+TkFunctionArgs
+                             : 'FUNCTION_ARGS'
+                             ;
+TkFunctionBody
+                             : 'FUNCTION_BODY'
+                             ;
+TkFunctionReturn
+                             : 'FUNCTION_RETURN'
+                             ;
+TkCustomAttribute
+                             : 'CUSTOM_ATTRIBUTE'
+                             ;
+TkCustomAttributeArgs
+                             : 'CUSTOM_ATTRIBUTE_ARGS'
+                             ;
+TkNewType
+                             : 'NEW_TYPE'
+                             ;
+TkClass
+                             : 'CLASS'
+                             ;
+TkRecord
+                             : 'RECORD_TYPE'
+                             ;
+TkRecordHelper
+                             : 'RECORD_HELPER'
+                             ;
+TkInterface
+                             : 'INTERFACE_TYPE'
+                             ;
+TkObject
+                             : 'OBJECT_TYPE'
+                             ;
+TkClassOfType
+                             : 'CLASS_OF_TYPE'
+                             ;
+TkVariableType
+                             : 'VARIABLE_TYPE'
+                             ;
+TkVariableIdents
+                             : 'VARIABLE_IDENTS'
+                             ;
+TkVariableParam
+                             : 'VARIABLE_PARAM'
+                             ;
+TkGuid
+                             : 'INTERFACE_GUID'
+                             ;
+TkClassParents
+                             : 'CLASS_PARENTS'
+                             ;
+TkClassField
+                             : 'CLASS_FIELD'
+                             ;
+TkAnonymousExpression
+                             : 'ANONYMOUS_EXPRESSION'
+                             ;
+TkIdentifier
+                             : (Alpha | '_') (Alpha | Digit | '_')*
+                             ;
+TkIntNum
+                             : Digitseq
+                             ;
+TkRealNum
+                             : Digitseq (DOT Digitseq)? (
+                                                          'e' (
+                                                                                       PLUS
+                                                                                       | MINUS
+                                                          )? Digitseq
+                             )? //CHANGED
+                             ;
+TkHexNum
+                             : '$' Hexdigitseq
+                             ;
+TkAsmHexNum
+                             : Hexdigitseq ('h')
+                             ;
+TkAsmHexLabel
+                             : Hexdigitseq COLON
+                             ;
+QuotedString
+                             : '\'' ('\'\'' | ~('\''))* '\'' //taken from PASCAL grammar
+                             ;
+ControlString
+                             : Controlchar Controlchar*
+                             ;
+
+fragment Controlchar
+                             : '#' Digitseq | '#' '$' Hexdigitseq
+                             ;
+fragment Alpha
+                             : 'a' ..'z'
+                             | 'A' ..'Z'
+                             | '\u0080' ..'\uFFFE' ~(
+                                                          '\uFEFF'
+                             ) //ADDED unicode support
+                             ;
+fragment Digit
+                             : '0' ..'9'
+                             ;
+fragment Digitseq
+                             : Digit Digit*
+                             ;
+fragment Hexdigit
+                             : Digit | 'a' ..'f' | 'A' ..'F'
+                             ;
+Hexdigitseq
+                             : Hexdigit Hexdigit*
+                             ;
+COMMENT
+                             : (
+                                                          '//' ~(
+                                                                                       '\n'
+                                                                                       | '\r'
+                                                          )* '\r'? '\n'
+                                                          | '(*' .*? '*)'
+                                                          | '{' .*? '}'
+                             ) -> skip
+                             ;
+WS
+                             : (' ' | '\t' | '\r' | '\n' | '\f')+ -> skip
+                             ;
+UnicodeBOM
+                             : '\uFEFF' -> skip
+                             ;

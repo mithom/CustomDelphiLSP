@@ -58,14 +58,38 @@
           "objectpascal",
           "opascal"
         ],
-        "configuration": "./language-configuration.json"
+        "configuration": "./delphi-configuration.json"
+      },
+      {
+        "id": "asqit",
+        "extensions": [
+          ".sdu"
+        ],
+        "aliases": [
+          "AsQit",
+          "Transcriptions",
+          "ul3-DSL"
+        ],
+        "configuration": "./asqit-configuration.json"
       }
     ],
     "grammars": [
       {
         "language": "objectpascal",
         "scopeName": "source.objectpascal",
-        "path": "./syntaxes/objectpascal.plist"
+        "path": "./syntaxes/objectpascal.json",
+        "embeddedLanguages": {
+          "meta.embedded.block.asqit": "asqit"
+        }
+      },
+      {
+        "language": "asqit",
+        "scopeName": "source.asqit",
+        "path": "./syntaxes/asqit.json",
+        "embeddedLanguages": {
+          "meta.embedded.block.vbs": "vbs",
+          "meta.embedded.block.python": "python"
+        }
       }
     ],
     "keybindings": [
